@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
+    <item android:id="@+id/action_wifi"
+        android:title="@string/action_wifi"
+        android:icon="@drawable/wifi"
+        android:enabled="true"
+        android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/action_magnetic"
+        android:title="@string/action_magnetic"
+        android:icon="@drawable/magnetic"
+        android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/action_fusion"
+        android:title="@string/action_fusion"
+        android:icon="@drawable/fusion"
+        android:orderInCategory="100" app:showAsAction="never" />
+</menu>
