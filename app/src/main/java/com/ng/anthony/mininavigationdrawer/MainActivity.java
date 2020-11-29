@@ -36,18 +36,28 @@ import com.ng.anthony.mininavigationdrawer.Sensor.SensorCollector;
 import com.ng.anthony.mininavigationdrawer.Sensor.SensorData;
 import com.ng.anthony.mininavigationdrawer.Sensor.SensorListener;
 import com.ng.anthony.mininavigationdrawer.Sensor.WifiCollector;
+import com.ng.anthony.mininavigationdrawer.Sensor.WifiCollector2;
 import com.ng.anthony.mininavigationdrawer.Sensor.WifiData;
 import com.ng.anthony.mininavigationdrawer.Sensor.FusionCollector;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.Timer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -81,6 +91,9 @@ public class MainActivity extends AppCompatActivity {
     private ScheduledFuture future1;
     private ScheduledFuture future2;
     private Timer timer;
+
+    List<String> wifilable = new ArrayList<>();
+    List<List> wifidata = new ArrayList<>();
 
     ImageView imageView;
     Bitmap bitmap;
@@ -196,6 +209,56 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void ReadWiFifingerprint(){
+        //读取WiFi指纹数据库
+        List<String> onewifidata = new ArrayList<>();
+        try {
+            Scanner scanner;
+            InputStream is = getResources().getAssets().open("ScanData_Mate7.csv");
+            scanner=new Scanner(is,"UTF-8");
+            scanner.nextLine();
+            while (scanner.hasNextLine()) {
+                onewifidata = new ArrayList<>();
+                String sourceString = scanner.nextLine();
+                Pattern pattern = Pattern.compile("[^,]*,");
+                Matcher matcher = pattern.matcher(sourceString);
+                String[] lines=new String[260];
+                int i=0;
+                while(matcher.find()) {
+                    String find = matcher.group().replace(",", "");
+                    lines[i]=find.trim();
+                    if(i==0||i==1){
+                        if(lines[i].equals("")){
+                            break;
+                        }
+                        i++;
+                        continue;
+                    }else if(i==2){
+                        if(lines[i].equals("avg")) break;
+                        if(lines[i].equals("")){
+                            wifilable.add(lines[0]+","+lines[1]);
+                        }
+                    }else{
+                        if(lines[i].equals("0")){
+                            onewifidata.add("-100");
+                        }else{
+                            onewifidata.add(lines[i]);
+                        }
+                    }
+                    i++;
+                }
+                if(onewifidata.size()!=0){
+                    //Log.d("readcsv", "onedata:" + onewifidata);
+                    wifidata.add(onewifidata);
+                }
+            }
+            //Log.d("readcsv", "lable:" + wifilable);
+            //Log.d("readcsv", "data:" + wifidata.size());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -213,6 +276,9 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_wifi) {
             tCode = "T10101";
+            wifilable.clear();
+            wifidata.clear();
+            ReadWiFifingerprint();
             text = text + "Change to Wifi Mode";
             Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
             return true;
@@ -265,7 +331,7 @@ public class MainActivity extends AppCompatActivity {
             if (tCode == "T10101") {
                 Toast.makeText(MainActivity.this, "Begin to Wifi location", Toast.LENGTH_SHORT).show();
                 ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
-                WifiCollector instance = new WifiCollector(getApplicationContext(), wifiManager, tCode, mapIndex, deviceId);//发送wifi信号，返回坐标
+                WifiCollector2 instance = new WifiCollector2(getApplicationContext(), wifiManager, tCode, mapIndex, deviceId, wifilable, wifidata);//发送wifi信号，返回坐标
                 LocationResult lr = new LocationResult(tCode);//赋值xy，广播更新
                 future1 = service.scheduleAtFixedRate(instance, 0, 1, TimeUnit.SECONDS);
                 future2 = service.scheduleAtFixedRate(lr, 0, 1, TimeUnit.SECONDS);
@@ -280,10 +346,10 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "方向传感器不可用", Toast.LENGTH_SHORT).show();
                 if(!sensorManager.registerListener(sensorListener, stepCounterSensor, SensorManager.SENSOR_DELAY_FASTEST))
                     //Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
-                if(!sensorManager.registerListener(sensorListener, stepDetecterSensor, SensorManager.SENSOR_DELAY_FASTEST))
-                    //Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
-                if(!sensorManager.registerListener(sensorListener, gyroscopeSensor, SensorManager.SENSOR_DELAY_FASTEST))
-                    Toast.makeText(MainActivity.this, "陀螺仪不可用", Toast.LENGTH_SHORT).show();
+                    if(!sensorManager.registerListener(sensorListener, stepDetecterSensor, SensorManager.SENSOR_DELAY_FASTEST))
+                        //Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
+                        if(!sensorManager.registerListener(sensorListener, gyroscopeSensor, SensorManager.SENSOR_DELAY_FASTEST))
+                            Toast.makeText(MainActivity.this, "陀螺仪不可用", Toast.LENGTH_SHORT).show();
                 ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
                 SensorCollector instance = new SensorCollector(tCode,mapIndex,deviceId);//发送地磁，返回坐标
                 LocationResult lr = new LocationResult(tCode);//赋值xy，广播更新
@@ -300,10 +366,10 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "方向传感器不可用", Toast.LENGTH_SHORT).show();
                 if(!sensorManager.registerListener(sensorListener, stepCounterSensor, SensorManager.SENSOR_DELAY_FASTEST))
                     //Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
-                if(!sensorManager.registerListener(sensorListener, stepDetecterSensor, SensorManager.SENSOR_DELAY_FASTEST))
-                    //Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
-                if(!sensorManager.registerListener(sensorListener, gyroscopeSensor, SensorManager.SENSOR_DELAY_FASTEST))
-                    Toast.makeText(MainActivity.this, "陀螺仪不可用", Toast.LENGTH_SHORT).show();
+                    if(!sensorManager.registerListener(sensorListener, stepDetecterSensor, SensorManager.SENSOR_DELAY_FASTEST))
+                        //Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
+                        if(!sensorManager.registerListener(sensorListener, gyroscopeSensor, SensorManager.SENSOR_DELAY_FASTEST))
+                            Toast.makeText(MainActivity.this, "陀螺仪不可用", Toast.LENGTH_SHORT).show();
                 ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
                 FusionCollector instance = new FusionCollector(wifiManager, tCode, mapIndex, deviceId);//发送融合信号，返回坐标
                 LocationResult lr = new LocationResult(tCode);//赋值xy，广播更新
