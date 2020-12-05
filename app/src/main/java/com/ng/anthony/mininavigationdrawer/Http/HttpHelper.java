@@ -44,14 +44,13 @@ import java.util.List;
 
 import static android.content.ContentValues.TAG;
 
-
 public class HttpHelper {
 
     private static String apiUrl = "http://www.sysu-imsl.com";
 
     private MainActivity mainActivity;
 
-    public static String sendJsonPost(String data, String method, Integer ApNum) throws JSONException, IOException {
+    public static String sendJsonPost(String magdata,String wifidata, String method, Integer ApNum,Integer count) throws JSONException, IOException {
         String json = null;
 
         if(method.equals("wifi")) {
@@ -60,25 +59,28 @@ public class HttpHelper {
             jsonObject.put("TCode", "T10101");
             jsonObject.put("MapIdx", "01");
             jsonObject.put("ApNum", ApNum);
-            jsonObject.put("WifiData", data);
+            jsonObject.put("MagData", magdata);
+            jsonObject.put("WifiData", wifidata);
+            jsonObject.put("CountNum", count);
             json = jsonObject.toString();
         }else if(method.equals("mag")){
             JSONObject jsonObject = new JSONObject();
+            jsonObject.put("CountNum", count);
             jsonObject.put("DevID", "0002");
             jsonObject.put("TCode", "T10102");
             jsonObject.put("MapIdx", "01");
-//            jsonObject.put("ApNum", "5");
-            jsonObject.put("MagData", data);
+            jsonObject.put("MagData", magdata);
+            jsonObject.put("WifiData", wifidata);
             json = jsonObject.toString();
-        }else {
+        }else if(method.equals("fusion")){
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("DevID", "0003");
             jsonObject.put("TCode", "T10201");
             jsonObject.put("MapIdx", "01");
-            jsonObject.put("Data", data);
+            jsonObject.put("MagData",magdata);
+            jsonObject.put("WifiData",wifidata);
             jsonObject.put("ApNum", ApNum);
-            //jsonObject.put("WifiData", data);
-            //jsonObject.put("MagData", method);
+            jsonObject.put("CountNum",count);
             json = jsonObject.toString();
         }
         // HttpClient 6.0被抛弃了
@@ -109,7 +111,7 @@ public class HttpHelper {
             Response response = client.newCall(request).execute();
             if (response.isSuccessful()) {
                 result = response.body().string();
-                Log.d("httphelper", "result" + result);
+                //Log.d("httphelper", "result" + result);
             } else {
                 throw new IOException("httphelper " + response);
             }

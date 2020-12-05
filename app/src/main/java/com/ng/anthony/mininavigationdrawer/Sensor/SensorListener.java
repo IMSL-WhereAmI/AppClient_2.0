@@ -21,8 +21,11 @@ public class SensorListener implements SensorEventListener{
     private String[] magneticData ;
     private String[] orientationData ;
     private String[] gyroscopeData;
+    private String accnorm;
     private String stepCounterData = "0";
     private String stepDetectorData = "0";
+    private String stepCount;
+    private String temp;
 
 
     @Override
@@ -42,8 +45,12 @@ public class SensorListener implements SensorEventListener{
                 accelerometerData[0] = ""+event.values[0];
                 accelerometerData[1] = ""+event.values[1];
                 accelerometerData[2] = ""+event.values[2];
+                //Log.d("acc", accelerometerData[0]+" "+accelerometerData[1]+" "+accelerometerData[2]);
+                temp = String.valueOf(event.values[0]*event.values[0] + event.values[1]*event.values[1] + event.values[2]*event.values[2]) ;
+                accnorm = String.valueOf(Math.sqrt(Double.parseDouble(temp)));
+                //Log.d("acc", accnorm);
                 SYNC[1] = 1;
-//                Log.d("capsensordata_a", accelerometerData[1]);
+//              Log.d("capsensordata_a", accelerometerData[1]);
                 break;
             }
             case Sensor.TYPE_ORIENTATION:{
@@ -60,12 +67,15 @@ public class SensorListener implements SensorEventListener{
                 magneticData[0] = ""+event.values[0];
                 magneticData[1] = ""+event.values[1];
                 magneticData[2] = ""+event.values[2];
+                //System.out.println("地磁 "+magneticData);
                 SYNC[3] = 1;
 //                Log.d("capsensordata_m", magneticData[1]);
                 break;
             }
             case Sensor.TYPE_STEP_COUNTER:{
-                stepCounterData = ""+event.values[0];
+                //stepCounterData = ""+event.values[0];
+                stepCount = ""+event.values[0];
+                System.out.println("步数 "+stepCount);
 //                Log.d("capsensordata_s1", stepCounterData);
                 SYNC[4] = 1;
                 break;
@@ -82,13 +92,15 @@ public class SensorListener implements SensorEventListener{
 
         if(sync()) {
             String captime = getCurrentTime();
-            String[] stepData = new String[2];
-            stepData[1] = stepCounterData;
-            stepData[0] = stepDetectorData;
+            //Log.d("SensorListener",accelerometerData[0]+ " "+accelerometerData[1]+ " "+accelerometerData[2]+ " " +stepCount);
+            //String[] stepData = new String[3];
+            //stepData[1] = stepCounterData;
+            //stepData[0] = stepDetectorData;
+            //stepData[2] = stepCount;
 //            Log.d("TAG", "addSensorData: "+magneticData[0]);
 //            System.out.println("addSensorData: "+magneticData[0]+" "+magneticData[1]+" "+magneticData[2]);
             SensorData.addSensorData(magneticData, accelerometerData, orientationData,
-                    gyroscopeData, stepData, captime);
+                    gyroscopeData, stepCount, accnorm, captime);
             reset();
         }
 
@@ -105,8 +117,10 @@ public class SensorListener implements SensorEventListener{
 //                return false;
 //        }
 
-        if(SYNC[3] == 1&&SYNC[1]==1)
+        if(SYNC[3] == 1&&SYNC[1] == 1){
+            //Log.d("SensorListener", "Sensor collect success！");
             return true;
+        }
         else
             return false;
     }

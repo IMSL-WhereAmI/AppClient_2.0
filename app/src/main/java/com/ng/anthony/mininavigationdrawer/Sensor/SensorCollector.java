@@ -24,6 +24,7 @@ public class SensorCollector implements Runnable {
     String mapIndex;
     String deviceId;
     Boolean flag;
+    Integer count;
     private static float X;
     private static float Y;
 
@@ -32,6 +33,7 @@ public class SensorCollector implements Runnable {
         mapIndex = mapIdx;
         deviceId = deviceid;
         flag = false;
+        count = 0;
         Log.d("SensorCollector", "SensorCollector initial. tCode:" + tCode);
         Log.d("SensorCollector", "SensorCollector initial. mapIndex:" + mapIndex);
         Log.d("SensorCollector", "SensorCollector initial. deviceId:" + deviceId);
@@ -39,35 +41,30 @@ public class SensorCollector implements Runnable {
 
     @Override
     public void run() {
+        Log.d("SensorCollector","run ");
         String data = SensorData.getAllDataStr();//每秒将magneticSensorData内的数据发送，并清空（传感器持续往magneticSensorData添加）
-        Log.d("SensorCollector","data "+data);
-        //if(data == null ||"".equals(data))
-        //    return;
-        //Log.d("SensorCollector","DATA: " +  data);
-        // if (flag == false){
-            flag = true;
-            try {
-                String result =  HttpHelper.sendJsonPost(data,"mag",0);
-                System.out.println(result);
-                if(result==null) return;
-                Map maps = (Map)JSON.parse(result);
-                String status = maps.get("status").toString();
-                if(status!=null && ("1").equals(status)){
-                    String TermLoc = maps.get("TermLoc").toString();
-                    // delete [ ]
-                    TermLoc = TermLoc.substring(1,TermLoc.length()-1);
-                    String[] str = TermLoc.split(",");
-                    X =Float.parseFloat(str[0]);
-                    Y =Float.parseFloat(str[1]);
-                    SensorData.setLocationResult(X,Y);
-                    Log.d("WifiCollector","XY: " +  X+" "+Y);
-                    flag = false;
-                }
-
-            } catch (JSONException | IOException e) {
-                e.printStackTrace();
+        Log.d("SensorCollector","data "+ data);
+        if("".equals(data)) return;
+        try {
+            count++;
+            String result =  HttpHelper.sendJsonPost(data,"","mag",0,count);
+            Log.d("SensorCollector","result "+ result);
+            Map maps = (Map)JSON.parse(result);
+            String status = maps.get("status").toString();
+            if(status!=null && ("1").equals(status)){
+                String TermLoc = maps.get("TermLoc").toString();
+                TermLoc = TermLoc.substring(1,TermLoc.length()-1);
+                String[] str = TermLoc.split(",");
+                X =Float.parseFloat(str[0]);
+                Y =Float.parseFloat(str[1]);
+                SensorData.setLocationResult(X,Y);
+                Log.d("WifiCollector","XY: " +  X+" "+Y);
                 flag = false;
             }
-        //}
+
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+            flag = false;
+        }
     }
 }

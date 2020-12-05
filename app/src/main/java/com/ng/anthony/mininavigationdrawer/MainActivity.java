@@ -297,6 +297,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /*
     final Handler handler = new Handler();
     Runnable runnable = new Runnable(){
         @Override
@@ -307,6 +308,7 @@ public class MainActivity extends AppCompatActivity {
             handler.postDelayed(this, 15*1000);// 15s是延时时长
         }
     };
+     */
 
     private View.OnClickListener btn_listener = new View.OnClickListener() {
         @Override
@@ -315,7 +317,7 @@ public class MainActivity extends AppCompatActivity {
                 Snackbar.make(v, "Begin to Location", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
                 beginCollector(tCode);
-                handler.postDelayed(runnable, 15*1000);
+                //handler.postDelayed(runnable, 15*1000);
             }else {
                 Snackbar.make(v, "Stop to Location", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
@@ -345,11 +347,12 @@ public class MainActivity extends AppCompatActivity {
                 if(!sensorManager.registerListener(sensorListener, orientationSensor, SensorManager.SENSOR_DELAY_FASTEST))
                     Toast.makeText(MainActivity.this, "方向传感器不可用", Toast.LENGTH_SHORT).show();
                 if(!sensorManager.registerListener(sensorListener, stepCounterSensor, SensorManager.SENSOR_DELAY_FASTEST))
-                    //Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
-                    if(!sensorManager.registerListener(sensorListener, stepDetecterSensor, SensorManager.SENSOR_DELAY_FASTEST))
-                        //Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
-                        if(!sensorManager.registerListener(sensorListener, gyroscopeSensor, SensorManager.SENSOR_DELAY_FASTEST))
-                            Toast.makeText(MainActivity.this, "陀螺仪不可用", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
+                if(!sensorManager.registerListener(sensorListener, stepDetecterSensor, SensorManager.SENSOR_DELAY_FASTEST))
+                    Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
+                if(!sensorManager.registerListener(sensorListener, gyroscopeSensor, SensorManager.SENSOR_DELAY_FASTEST))
+                    Toast.makeText(MainActivity.this, "陀螺仪不可用", Toast.LENGTH_SHORT).show();
+                Log.d("dddddddd", "第一步");
                 ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
                 SensorCollector instance = new SensorCollector(tCode,mapIndex,deviceId);//发送地磁，返回坐标
                 LocationResult lr = new LocationResult(tCode);//赋值xy，广播更新
@@ -365,16 +368,16 @@ public class MainActivity extends AppCompatActivity {
                 if(!sensorManager.registerListener(sensorListener, orientationSensor, SensorManager.SENSOR_DELAY_FASTEST))
                     Toast.makeText(MainActivity.this, "方向传感器不可用", Toast.LENGTH_SHORT).show();
                 if(!sensorManager.registerListener(sensorListener, stepCounterSensor, SensorManager.SENSOR_DELAY_FASTEST))
-                    //Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
-                    if(!sensorManager.registerListener(sensorListener, stepDetecterSensor, SensorManager.SENSOR_DELAY_FASTEST))
-                        //Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
-                        if(!sensorManager.registerListener(sensorListener, gyroscopeSensor, SensorManager.SENSOR_DELAY_FASTEST))
-                            Toast.makeText(MainActivity.this, "陀螺仪不可用", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
+                if(!sensorManager.registerListener(sensorListener, stepDetecterSensor, SensorManager.SENSOR_DELAY_FASTEST))
+                    Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
+                if(!sensorManager.registerListener(sensorListener, gyroscopeSensor, SensorManager.SENSOR_DELAY_FASTEST))
+                    Toast.makeText(MainActivity.this, "陀螺仪不可用", Toast.LENGTH_SHORT).show();
                 ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
-                FusionCollector instance = new FusionCollector(wifiManager, tCode, mapIndex, deviceId);//发送融合信号，返回坐标
+                FusionCollector instance = new FusionCollector(getApplicationContext(),wifiManager, tCode, mapIndex, deviceId);//发送融合信号，返回坐标
                 LocationResult lr = new LocationResult(tCode);//赋值xy，广播更新
-                future1 = service.scheduleAtFixedRate(instance, 0, 1, TimeUnit.SECONDS);
-                future2 = service.scheduleAtFixedRate(lr, 0, 1, TimeUnit.SECONDS);
+                future1 = service.scheduleAtFixedRate(instance, 1, 1, TimeUnit.SECONDS);
+                future2 = service.scheduleAtFixedRate(lr, 1, 1, TimeUnit.SECONDS);
 
             }
         }
@@ -528,6 +531,7 @@ public class MainActivity extends AppCompatActivity {
             path_y[number] = (float) Y;
             number++;
             imageView.setImageBitmap(bitmap);
+
             changeMapflag=false;
         }
     }

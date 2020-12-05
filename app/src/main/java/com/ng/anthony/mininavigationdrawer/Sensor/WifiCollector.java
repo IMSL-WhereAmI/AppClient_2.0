@@ -59,7 +59,6 @@ public class WifiCollector implements Runnable {
             while ((str = bf.readLine()) != null) {
                 mac_Name.add(str);
             }
-            //Log.d("WifiCollector", "readtxtsuccess");
             bf.close();
             is.close();
         } catch (IOException e) {
@@ -77,14 +76,19 @@ public class WifiCollector implements Runnable {
 
         //Log.d("TAG", "scannumber:" +scanResult);
         //Log.d("TAG", "macname" +mac_Name);
+        int wifinotnull = 0;
         for (String value:mac_Name) {//按序
             for(ScanResult sc : scanResult){
                 if(sc.BSSID.equals(value)){
                     wdlist.add( Integer.toString(sc.level));
-                }else{
-                    wdlist.add( Integer.toString(-100));
+                    wifinotnull = 1;
+                    break;
                 }
             }
+            if(wifinotnull == 0){
+                wdlist.add( Integer.toString(-100));
+            }
+            wifinotnull = 0;
         }
         //Log.d("TAG", "wdlist:" +wdlist);
         String data = "";
@@ -97,7 +101,7 @@ public class WifiCollector implements Runnable {
         Log.d("Wifidata","data: " +  data);
 
         try {
-            String result =  HttpHelper.sendJsonPost(data,"wifi", wdlist.size());
+            String result =  HttpHelper.sendJsonPost("",data,"wifi", wdlist.size(),0);
             //Log.d("WifiCollector","result: " +  result);
             Map maps = (Map) JSON.parse(result);
             String status = maps.get("status").toString();
