@@ -18,6 +18,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    aaptOptions {
+        cruncherEnabled = false
+        useNewCruncher = false
+    }
 }
 
 dependencies {
@@ -35,6 +39,7 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:25.4.0'
     implementation 'com.alibaba:fastjson:1.1.54.android'
     implementation files('libs/okhttp-2.7.5.jar')
+    implementation 'com.clj.fastble:FastBleLib:2.3.4'
 }
 
 buildscript {

@@ -25,6 +25,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
@@ -32,6 +33,9 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
+import com.ng.anthony.mininavigationdrawer.Http.HttpHelper;
+import com.ng.anthony.mininavigationdrawer.Sensor.BleData;
 import com.ng.anthony.mininavigationdrawer.Sensor.SensorCollector;
 import com.ng.anthony.mininavigationdrawer.Sensor.SensorData;
 import com.ng.anthony.mininavigationdrawer.Sensor.SensorListener;
@@ -39,6 +43,17 @@ import com.ng.anthony.mininavigationdrawer.Sensor.WifiCollector;
 import com.ng.anthony.mininavigationdrawer.Sensor.WifiCollector2;
 import com.ng.anthony.mininavigationdrawer.Sensor.WifiData;
 import com.ng.anthony.mininavigationdrawer.Sensor.FusionCollector;
+
+import com.clj.fastble.BleManager;
+import com.clj.fastble.callback.BleGattCallback;
+import com.clj.fastble.callback.BleMtuChangedCallback;
+import com.clj.fastble.callback.BleRssiCallback;
+import com.clj.fastble.callback.BleScanCallback;
+import com.clj.fastble.data.BleDevice;
+import com.clj.fastble.exception.BleException;
+import com.clj.fastble.scan.BleScanRuleConfig;
+
+import org.json.JSONException;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -48,9 +63,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.TimerTask;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -72,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
     // T10101 -- wifi mode
     // T10102 -- magnetic mode
     // T10201 -- fusion mode
+    // T10103 -- bluetooth
 
     private String deviceId;
     private String mapIndex;
@@ -92,6 +114,15 @@ public class MainActivity extends AppCompatActivity {
     private ScheduledFuture future2;
     private Timer timer;
 
+    //蓝牙
+    private static String[] BLE_NAMES = new String[]{"A207-01","A207-02","A207-03","A207-04","A207-05","A207-06","A207-07","A207-08"};
+    private static int[] ble_rssi = new int[BLE_NAMES.length];
+    private static void reset(int[] rssi){
+        for(int i = 0; i < rssi.length; i++)
+            rssi[i] = -100;
+    }
+
+    //wifi
     List<String> wifilable = new ArrayList<>();
     List<List> wifidata = new ArrayList<>();
 
@@ -183,6 +214,85 @@ public class MainActivity extends AppCompatActivity {
             String[] permissionsss = mPermissionList.toArray(new String[mPermissionList.size()]);//将List转为数组
             ActivityCompat.requestPermissions(MainActivity.this, permissionsss, 1);
         }
+    }
+
+
+    public static class SaveScanRes extends TimerTask {//计时器保存蓝牙扫描数据
+        @Override
+        public void run() {
+            String data = Arrays.toString(ble_rssi);
+            Log.i("BleData", data);
+            try {
+                String result =  HttpHelper.sendJsonPost("",data,"bluetooth",0,0);
+                Log.d("BleResult", result);
+                Map maps = (Map)JSON.parse(result);
+                String status = maps.get("status").toString();
+                if(status!=null && ("1").equals(status)) {
+                    String TermLoc = maps.get("TermLoc").toString();
+                    Log.d("TermLoc", TermLoc);
+                    TermLoc = TermLoc.substring(1, TermLoc.length() - 1);
+                    String[] str = TermLoc.split(",");
+                    float X = Float.parseFloat(str[0]);
+                    float Y = Float.parseFloat(str[1]);
+                    Log.d("BleResData", "XY: " + X + " " + Y);
+                    BleData.setLocationResult(X, Y);
+                }
+            } catch (JSONException | IOException e) {
+                e.printStackTrace();
+            }
+
+
+        }
+    }
+
+    private void setBleScanRule() { //蓝牙扫描规则
+        String[] names;
+        String BLE_names = "A207-01,A207-02,A207-03,A207-04,A207-05,A207-06,A207-07,A207-08";
+        names = BLE_names.split(",");
+
+        BleScanRuleConfig scanRuleConfig = new BleScanRuleConfig.Builder()
+                .setDeviceName(true, names)   // 只扫描指定广播名的设备，可选
+                .setAutoConnect(false)      // 连接时的autoConnect参数，可选，默认false
+                .setScanTimeOut(0)              // 扫描超时时间，可选，默认    10秒
+                .build();
+        BleManager.getInstance().initScanRule(scanRuleConfig);
+
+    }
+
+    private void StartBleScan(){
+        BleManager.getInstance().scan(new BleScanCallback() {
+            @Override
+            public void onScanStarted(boolean success) {
+                if(success){
+                    Log.i("onScanStarted", "onScanStarted: success");
+                }
+                else {
+                    Log.i("onScanStarted", "onScanStarted: failed");
+                }
+                timer = new Timer();
+                timer.schedule(new SaveScanRes(), 500, 1000);
+            }
+
+            @Override
+            public void onLeScan(BleDevice bleDevice) {
+                super.onLeScan(bleDevice);
+                Log.i("onLeScan", "onLeScan: " + bleDevice.getName() + "," + bleDevice.getRssi());
+                String name = bleDevice.getName();
+                if(Arrays.asList(BLE_NAMES).contains(name)){
+                    ble_rssi[Integer.parseInt(name.substring(5)) - 1] = bleDevice.getRssi();
+                }
+            }
+
+            @Override
+            public void onScanning(BleDevice bleDevice) {
+            }
+
+            @Override
+            public void onScanFinished(List<BleDevice> scanResultList) {
+                timer.cancel();
+
+            }
+        });
     }
 
     @Override
@@ -292,6 +402,11 @@ public class MainActivity extends AppCompatActivity {
             text = text + "Change to Fusion Mode";
             Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
             return true;
+        }else if(id == R.id.action_bluetooth){
+            tCode = "T10103";
+            text = text + "Change to Bluetooth Mode";
+            Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -352,7 +467,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
                 if(!sensorManager.registerListener(sensorListener, gyroscopeSensor, SensorManager.SENSOR_DELAY_FASTEST))
                     Toast.makeText(MainActivity.this, "陀螺仪不可用", Toast.LENGTH_SHORT).show();
-                Log.d("dddddddd", "第一步");
+
                 ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
                 SensorCollector instance = new SensorCollector(tCode,mapIndex,deviceId);//发送地磁，返回坐标
                 LocationResult lr = new LocationResult(tCode);//赋值xy，广播更新
@@ -380,6 +495,32 @@ public class MainActivity extends AppCompatActivity {
                 future2 = service.scheduleAtFixedRate(lr, 1, 1, TimeUnit.SECONDS);
 
             }
+
+            if (tCode == "T10103"){
+                reset(ble_rssi);
+                //初始化及配置
+                BleManager.getInstance().init(getApplication());
+                BleManager.getInstance()
+                        .enableLog(true)
+                        .setReConnectCount(1, 5000)
+                        .setConnectOverTime(20000)
+                        .setOperateTimeout(5000);
+
+                Toast.makeText(MainActivity.this, "Begin to Fusion location", Toast.LENGTH_SHORT).show();
+                if(!BleManager.getInstance().isSupportBle())
+                    Toast.makeText(MainActivity.this, "当前设备不支持蓝牙", Toast.LENGTH_SHORT).show();
+                if(!BleManager.getInstance().isBlueEnable()){
+                    Toast.makeText(MainActivity.this, "蓝牙未开启", Toast.LENGTH_SHORT).show();
+                    return;
+                    //BleManager.getInstance().enableBluetooth();
+                }
+                setBleScanRule();
+                StartBleScan();
+
+                ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
+                LocationResult lr = new LocationResult(tCode);//赋值xy，广播更新
+                future2 = service.scheduleAtFixedRate(lr, 1, 1, TimeUnit.SECONDS);
+            }
         }
         else
             return;
@@ -396,12 +537,18 @@ public class MainActivity extends AppCompatActivity {
             if (tCode == "T10102"){
                 future1.cancel(true);
                 future2.cancel(true);
-                sensorManager.unregisterListener(sensorListener);//停止监听收集地磁
+                sensorManager.unregisterListener(sensorListener);
             }
             if (tCode == "T10201"){
                 future1.cancel(true);
                 future2.cancel(true);
-                sensorManager.unregisterListener(sensorListener);//停止监听收集地磁
+                sensorManager.unregisterListener(sensorListener);
+            }
+            if (tCode == "T10103"){
+                BleManager.getInstance().cancelScan();
+                BleManager.getInstance().disconnectAllDevice();
+                BleManager.getInstance().destroy();
+                future2.cancel(true);
             }
         }
         else
@@ -566,6 +713,13 @@ public class MainActivity extends AppCompatActivity {
             }
             else if(tCode == "T10201"){
                 locationResult = SensorData.getLocationResult();
+                //Log.d("LocationResult", "run: "+locationResult[0]+" "+locationResult[1]);
+                X = locationResult[0];
+                Y = locationResult[1];
+                sendBroadcast(intent);//发送广播
+            }
+            else if(tCode == "T10103"){
+                locationResult = BleData.getLocationResult();
                 //Log.d("LocationResult", "run: "+locationResult[0]+" "+locationResult[1]);
                 X = locationResult[0];
                 Y = locationResult[1];
