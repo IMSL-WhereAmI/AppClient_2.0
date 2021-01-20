@@ -101,6 +101,8 @@ public class SensorListener implements SensorEventListener{
 //            System.out.println("addSensorData: "+magneticData[0]+" "+magneticData[1]+" "+magneticData[2]);
             SensorData.addSensorData(magneticData, accelerometerData, orientationData,
                     gyroscopeData, stepCount, accnorm, captime);
+            BleMagData.addSensorData(magneticData, accelerometerData, orientationData,
+                    gyroscopeData, stepCount, accnorm, captime);
             reset();
         }
 

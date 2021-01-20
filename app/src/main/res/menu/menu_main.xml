@@ -18,4 +18,8 @@
         android:title="@string/action_bluetooth"
         android:icon="@drawable/fusion"
         android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/action_blemag"
+        android:title="@string/action_blemag"
+        android:icon="@drawable/fusion"
+        android:orderInCategory="100" app:showAsAction="never" />
 </menu>

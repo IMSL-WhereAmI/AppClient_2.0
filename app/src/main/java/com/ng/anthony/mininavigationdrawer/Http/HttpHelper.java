@@ -87,12 +87,23 @@ public class HttpHelper {
             jsonObject.put("DevID", "0004");
             jsonObject.put("TCode", "T10103");
             jsonObject.put("MapIdx", "01");
-            jsonObject.put("magData",magdata);
+            jsonObject.put("MagData",magdata);
+            jsonObject.put("BleData",wifidata);
+            jsonObject.put("ApNum", ApNum);
+            jsonObject.put("CountNum",count);
+            json = jsonObject.toString();
+        }else if(method.equals("BleMag")){
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("DevID", "0005");
+            jsonObject.put("TCode", "T10202");
+            jsonObject.put("MapIdx", "01");
+            jsonObject.put("MagData",magdata);
             jsonObject.put("BleData",wifidata);
             jsonObject.put("ApNum", ApNum);
             jsonObject.put("CountNum",count);
             json = jsonObject.toString();
         }
+
         // HttpClient 6.0被抛弃了
         String result = "";
         Log.d("json", json);
