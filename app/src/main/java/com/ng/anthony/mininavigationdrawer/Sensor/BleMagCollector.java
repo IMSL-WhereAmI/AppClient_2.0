@@ -29,6 +29,7 @@ public class BleMagCollector implements Runnable {
         tCode = tcode;
         mapIndex = mapIdx;
         deviceId = deviceid;
+        count = 0;
         Log.d("BleMagCollector", "BleMagCollector initial. tCode:" + tCode);
         Log.d("BleMagCollector", "BleMagCollector initial. mapIndex:" + mapIndex);
         Log.d("BleMagCollector", "BleMagCollector initial. deviceId:" + deviceId);
@@ -38,11 +39,16 @@ public class BleMagCollector implements Runnable {
     public void run() {
         String Bledata = BleMagData.getBleDataStr();
         String Magdata = BleMagData.getAllDataStr();
+        if(Bledata == null || Magdata == null) return;
         Log.d("BleMagCollector","Bledata "+ Bledata);
         Log.d("BleMagCollector","Magdata "+ Magdata);
         try {
             count++;
             String result =  HttpHelper.sendJsonPost(Magdata,Bledata,"BleMag",0,count);
+            if(result == null || "".equals(result)){
+                Log.d("BleMagCollector","无效结果");
+                return;
+            }
             Log.d("BleMagCollector","result "+ result);
             Map maps = (Map)JSON.parse(result);
             String status = maps.get("status").toString();
@@ -55,7 +61,6 @@ public class BleMagCollector implements Runnable {
                 BleMagData.setLocationResult(X,Y);
                 Log.d("BleMagCollector","XY: " +  X+" "+Y);
             }
-
         } catch (JSONException | IOException e) {
             e.printStackTrace();
         }

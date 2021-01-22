@@ -278,7 +278,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onLeScan(BleDevice bleDevice) {
                 super.onLeScan(bleDevice);
-                Log.i("onLeScan", "onLeScan: " + bleDevice.getName() + "," + bleDevice.getRssi());
+                //Log.i("onLeScan", "onLeScan: " + bleDevice.getName() + "," + bleDevice.getRssi());
                 String name = bleDevice.getName();
                 if(Arrays.asList(BLE_NAMES).contains(name)){
                     ble_rssi[Integer.parseInt(name.substring(5)) - 1] = bleDevice.getRssi();
@@ -601,8 +601,6 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "蓝牙未开启", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
-
 
                 ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
                 setBleScanRule();
