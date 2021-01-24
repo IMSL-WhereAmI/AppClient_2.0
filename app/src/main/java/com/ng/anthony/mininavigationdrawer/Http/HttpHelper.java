@@ -46,8 +46,8 @@ import static android.content.ContentValues.TAG;
 
 public class HttpHelper {
 
-    private static String apiUrl = "https://www.sysu-imsl.com";
-    //private static String apiUrl = "http://192.168.134.33:8001";
+    //private static String apiUrl = "https://www.sysu-imsl.com";
+    private static String apiUrl = "http://192.168.137.1:8001";
 
     private MainActivity mainActivity;
 

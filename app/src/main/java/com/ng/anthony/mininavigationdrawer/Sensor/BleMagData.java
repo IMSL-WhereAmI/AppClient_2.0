@@ -15,7 +15,10 @@ public class BleMagData {
     public static String stepCount;
     private static double[] locationResult = {0,0};
 
-    private static String[] BLE_NAMES = new String[]{"A207-01","A207-02","A207-03","A207-04","A207-05","A207-06","A207-07","A207-08"};
+    private static String[] BLE_NAMES = new String[]{"A207-01","A207-02","A207-03","A207-04","A207-05","A207-06","A207-07","A207-08", "A207-09","A207-10",
+            "A207-11","A207-12","A207-13","A207-14","A207-15","A207-16","A207-17","A207-18", "A207-19","A207-20",
+            "A207-21","A207-22","A207-23","A207-24","A207-25","A207-26","A207-27","A207-28", "A207-29","A207-30",
+            "A207-31","A207-32","A207-33","A207-34","A207-35","A207-36","A207-37","A207-38"};
     private static int[] ble_rssi = new int[BLE_NAMES.length];
     private static void reset(int[] rssi){
         for(int i = 0; i < rssi.length; i++)

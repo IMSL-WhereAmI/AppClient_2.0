@@ -115,9 +115,14 @@ public class MainActivity extends AppCompatActivity {
     private ScheduledFuture future1;
     private ScheduledFuture future2;
     private Timer timer;
+    private static FileUtil fileUtil;
+    private static Integer Blecount;
 
     //蓝牙
-    private static String[] BLE_NAMES = new String[]{"A207-01","A207-02","A207-03","A207-04","A207-05","A207-06","A207-07","A207-08"};
+    private static String[] BLE_NAMES = new String[]{"A207-01","A207-02","A207-03","A207-04","A207-05","A207-06","A207-07","A207-08", "A207-09","A207-10",
+            "A207-11","A207-12","A207-13","A207-14","A207-15","A207-16","A207-17","A207-18", "A207-19","A207-20",
+            "A207-21","A207-22","A207-23","A207-24","A207-25","A207-26","A207-27","A207-28", "A207-29","A207-30",
+            "A207-31","A207-32","A207-33","A207-34","A207-35","A207-36","A207-37","A207-38"};
     private static int[] ble_rssi = new int[BLE_NAMES.length];
     private static void reset(int[] rssi){
         for(int i = 0; i < rssi.length; i++)
@@ -163,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
         stepCounterSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         stepDetecterSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
         gyroscopeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        fileUtil = new FileUtil();
         permissionCheck();
 
         tCode = "T10102";
@@ -221,7 +227,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void setBleScanRule() { //蓝牙扫描规则
         String[] names;
-        String BLE_names = "A207-01,A207-02,A207-03,A207-04,A207-05,A207-06,A207-07,A207-08";
+        String BLE_names = "A207-01,A207-02,A207-03,A207-04,A207-05,A207-06,A207-07,A207-08,A207-09,A207-10," +
+                "A207-11,A207-12,A207-13,A207-14,A207-15,A207-16,A207-17,A207-18,A207-19,A207-20," +
+                "A207-21,A207-22,A207-23,A207-24,A207-25,A207-26,A207-27,A207-28,A207-29,A207-30," +
+                "A207-31,A207-32,A207-33,A207-34,A207-35,A207-36,A207-37,A207-38";
         names = BLE_names.split(",");
         BleScanRuleConfig scanRuleConfig = new BleScanRuleConfig.Builder()
                 .setDeviceName(true, names)   // 只扫描指定广播名的设备，可选
@@ -232,14 +241,24 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public static String GetSystemTime(){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");// HH:mm:ss
+        //获取当前时间
+        Date date = new Date(System.currentTimeMillis());
+        return simpleDateFormat.format(date);
+    }
 
     public static class SaveScanRes extends TimerTask {//计时器保存蓝牙扫描数据
         @Override
         public void run() {
+            Blecount++;
             String data = Arrays.toString(ble_rssi);
+            boolean success = fileUtil.saveSensorData("LocationBleData.csv", data.substring(1, data.length()-1)
+                    + "," + GetSystemTime() + "\n");
+
             Log.i("BleData", data);
             try {
-                String result =  HttpHelper.sendJsonPost("",data,"bluetooth",0,0);
+                String result =  HttpHelper.sendJsonPost("",data,"bluetooth",0,Blecount);
                 Log.d("BleResult", result);
                 Map maps = (Map)JSON.parse(result);
                 String status = maps.get("status").toString();
@@ -256,6 +275,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (JSONException | IOException e) {
                 e.printStackTrace();
             }
+            // reset(ble_rssi);
         }
     }
 
@@ -301,6 +321,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             BleMagData.addBleData(ble_rssi);
+            // reset(ble_rssi);
         }
     }
 
@@ -546,6 +567,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (tCode == "T10103"){
+                Blecount = 0;
                 reset(ble_rssi);
                 //初始化及配置
                 BleManager.getInstance().init(getApplication());
