@@ -255,8 +255,8 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             Blecount++;
             String data = Arrays.toString(ble_rssi);
-            boolean success = fileUtil.saveSensorData("LocationBleData.csv", data.substring(1, data.length()-1)
-                    + "," + GetSystemTime() + "\n");
+//            boolean success = fileUtil.saveSensorData("LocationBleData.csv", data.substring(1, data.length()-1)
+//                    + "," + GetSystemTime() + "\n");
 
             Log.i("BleData", data);
             try {
@@ -277,7 +277,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (JSONException | IOException e) {
                 e.printStackTrace();
             }
-            // reset(ble_rssi);
+            //reset(ble_rssi);
         }
     }
 
@@ -323,7 +323,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             BleMagData.addBleData(ble_rssi);
-            // reset(ble_rssi);
+            //reset(ble_rssi);
         }
     }
 
@@ -357,7 +357,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onScanFinished(List<BleDevice> scanResultList) {
                 timer.cancel();
-
             }
         });
     }
