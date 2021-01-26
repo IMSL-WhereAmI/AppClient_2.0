@@ -775,24 +775,26 @@ public class MainActivity extends AppCompatActivity {
                         double xppreCor = xppreRatio * imageView.getWidth();
                         double yppreCor = yppreRatio * imageView.getHeight();
                         paint.setStrokeWidth((float) 15.0);
-                        if(xpreCor > 0 && ypreCor>0 && xppreCor>0 && yppreCor>0){
-                            paint.setPathEffect(new DashPathEffect(new float[]{20, 10}, 0));
-                            canvas.drawLine((float) xppreCor, (float) yppreCor, (float) xpreCor, (float) ypreCor,  paint );
-                        }
+//                        edit by duke
+//                        if(xpreCor > 0 && ypreCor>0 && xppreCor>0 && yppreCor>0){
+//                            paint.setPathEffect(new DashPathEffect(new float[]{20, 10}, 0));
+//                            canvas.drawLine((float) xppreCor, (float) yppreCor, (float) xpreCor, (float) ypreCor,  paint );
+//                        }
                     }
                 }else{//number=1
                     i = 1;
                 }
                 X_pre = path_x[i-1];
                 Y_pre = path_y[i-1];
-                if(X_pre > 0 && Y_pre>0){
-                    double xpreRatio = X_pre / width;
-                    double ypreRatio = Y_pre / height;
-                    double xpreCor = xpreRatio * imageView.getWidth();
-                    double ypreCor = ypreRatio * imageView.getHeight();
-                    paint.setStrokeWidth((float) 5.0);
-                    canvas.drawLine((float) xCor, (float) yCor, (float) xpreCor, (float) ypreCor,  paint );
-                }
+//                edit by duke
+//                if(X_pre > 0 && Y_pre>0){
+//                    double xpreRatio = X_pre / width;
+//                    double ypreRatio = Y_pre / height;
+//                    double xpreCor = xpreRatio * imageView.getWidth();
+//                    double ypreCor = ypreRatio * imageView.getHeight();
+//                    paint.setStrokeWidth((float) 5.0);
+//                    canvas.drawLine((float) xCor, (float) yCor, (float) xpreCor, (float) ypreCor,  paint );
+//                }
             }
             path_x[number] = (float) X;
             path_y[number] = (float) Y;
