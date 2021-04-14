@@ -18,6 +18,7 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.ParcelUuid;
 import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -84,6 +85,12 @@ import java.util.Timer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import no.nordicsemi.android.support.v18.scanner.BluetoothLeScannerCompat;
+import no.nordicsemi.android.support.v18.scanner.ScanCallback;
+import no.nordicsemi.android.support.v18.scanner.ScanFilter;
+import no.nordicsemi.android.support.v18.scanner.ScanResult;
+import no.nordicsemi.android.support.v18.scanner.ScanSettings;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQ_CODE_PERMISSION_EXTERNAL_STORAGE = 0x1111;
@@ -120,17 +127,23 @@ public class MainActivity extends AppCompatActivity {
     private static FileUtil fileUtil;
     private static Integer Blecount;
 
+    private BluetoothLeScannerCompat scanner;
+    private ScanSettings settings;
+    private ScanCallback scanCallback;
+
     //蓝牙
     private static String[] BLE_NAMES = new String[]{"A207-01","A207-02","A207-03","A207-04","A207-05","A207-06","A207-07","A207-08", "A207-09","A207-10",
             "A207-11","A207-12","A207-13","A207-14","A207-15","A207-16","A207-17","A207-18", "A207-19","A207-20",
             "A207-21","A207-22","A207-23","A207-24","A207-25","A207-26","A207-27","A207-28", "A207-29","A207-30",
             "A207-31","A207-32","A207-33","A207-34","A207-35","A207-36","A207-37","A207-38"};
-    private static int[] ble_rssi = new int[BLE_NAMES.length];
+
+    private static String[] BLE_MACS1 = new String[]{"0C:EC:80:FE:8C:CC","0C:EC:80:FF:10:FA","0C:EC:80:FE:7B:E9","0C:EC:80:FF:0F:B2","0C:EC:80:FE:82:AC"};
+    private static String[] BLE_MACS2 = new String[]{"C5:7A:11:D5:98:6F","FA:0C:4B:97:A0:0E","CA:5D:8F:59:87:1C","E0:A8:DE:AA:B4:C4","D1:42:7A:BB:E0:25"};
+    private static int[] ble_rssi = new int[BLE_MACS1.length];
     private static void reset(int[] rssi){
         for(int i = 0; i < rssi.length; i++)
             rssi[i] = -100;
     }
-
     //wifi
     List<String> wifilable = new ArrayList<>();
     List<List> wifidata = new ArrayList<>();
@@ -147,6 +160,29 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        scanner = BluetoothLeScannerCompat.getScanner();
+        settings = new ScanSettings.Builder().
+                setUseHardwareFilteringIfSupported(true).
+                setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).
+                setReportDelay(0).
+                build();
+        scanCallback = new ScanCallback() {
+            @Override
+            public void onScanResult(int callbackType, ScanResult result) {
+                super.onScanResult(callbackType, result);
+                // BLE_MACS1表示使用第一组mac地址
+                if(Arrays.asList(BLE_MACS2).contains(result.getDevice().toString())){
+                    ble_rssi[Arrays.asList(BLE_MACS2).indexOf(result.getDevice().toString())] = result.getRssi();
+                    Log.d("scanResult", result.toString());
+                }
+            }
+
+            @Override
+            public void onScanFailed(int errorCode) {
+                super.onScanFailed(errorCode);
+            }
+        };
 
         flag = false;
         fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -568,30 +604,38 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (tCode == "T10103"){
+
+                List<ScanFilter> filters = new ArrayList<>();
+
+                //filters.add(new ScanFilter.Builder().setServiceUuid(mUuid).build());
+                scanner.startScan(filters, settings, scanCallback);
+
                 Blecount = 0;
                 reset(ble_rssi);
-                //初始化及配置
-                BleManager.getInstance().init(getApplication());
-                BleManager.getInstance()
-                        .enableLog(true)
-                        .setReConnectCount(1, 5000)
-                        .setConnectOverTime(20000)
-                        .setOperateTimeout(5000);
-
-                Toast.makeText(MainActivity.this, "Begin to Fusion location", Toast.LENGTH_SHORT).show();
-                if(!BleManager.getInstance().isSupportBle())
-                    Toast.makeText(MainActivity.this, "当前设备不支持蓝牙", Toast.LENGTH_SHORT).show();
-                if(!BleManager.getInstance().isBlueEnable()){
-                    Toast.makeText(MainActivity.this, "蓝牙未开启", Toast.LENGTH_SHORT).show();
-                    return;
-                    //BleManager.getInstance().enableBluetooth();
-                }
-                setBleScanRule();
-                StartBleScan();
-
+//                //初始化及配置
+//                BleManager.getInstance().init(getApplication());
+//                BleManager.getInstance()
+//                        .enableLog(true)
+//                        .setReConnectCount(1, 5000)
+//                        .setConnectOverTime(20000)
+//                        .setOperateTimeout(5000);
+//
+//                Toast.makeText(MainActivity.this, "Begin to Fusion location", Toast.LENGTH_SHORT).show();
+//                if(!BleManager.getInstance().isSupportBle())
+//                    Toast.makeText(MainActivity.this, "当前设备不支持蓝牙", Toast.LENGTH_SHORT).show();
+//                if(!BleManager.getInstance().isBlueEnable()){
+//                    Toast.makeText(MainActivity.this, "蓝牙未开启", Toast.LENGTH_SHORT).show();
+//                    return;
+//                    //BleManager.getInstance().enableBluetooth();
+//                }
+//                setBleScanRule();
+//                StartBleScan();
+//
                 ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
                 LocationResult lr = new LocationResult(tCode);//赋值xy，广播更新
                 future2 = service.scheduleAtFixedRate(lr, 1, 1, TimeUnit.SECONDS);
+                timer = new Timer();
+                timer.schedule(new SaveScanRes(), 500, 1000);
             }
 
             if (tCode == "T10202"){
@@ -657,10 +701,12 @@ public class MainActivity extends AppCompatActivity {
                 sensorManager.unregisterListener(sensorListener);
             }
             if (tCode == "T10103"){
-                BleManager.getInstance().cancelScan();
-                BleManager.getInstance().disconnectAllDevice();
-                BleManager.getInstance().destroy();
+                scanner.stopScan(scanCallback);
+//                BleManager.getInstance().cancelScan();
+//                BleManager.getInstance().disconnectAllDevice();
+//                BleManager.getInstance().destroy();
                 future2.cancel(true);
+                timer.cancel();
             }
             if (tCode == "T10202"){
                 BleManager.getInstance().cancelScan();

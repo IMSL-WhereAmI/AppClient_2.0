@@ -12,6 +12,7 @@ android {
         versionCode 1
         versionName "1.0"
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -40,6 +41,23 @@ dependencies {
     implementation 'com.alibaba:fastjson:1.1.54.android'
     implementation files('libs/okhttp-2.7.5.jar')
     implementation 'com.clj.fastble:FastBleLib:2.3.4'
+
+    implementation 'no.nordicsemi.android.support.v18:scanner:1.4.2'
+    implementation 'androidx.annotation:annotation:1.1.0'
+    androidTestImplementation 'androidx.test:runner:1.3.0-alpha02'
+    androidTestImplementation 'androidx.test:rules:1.3.0-alpha02'
+    androidTestImplementation 'org.hamcrest:hamcrest-library:2.1'
+    androidTestImplementation ('junit:junit:4.13-beta-3') {
+        exclude module: 'hamcrest-core'
+    }
+
+    testImplementation 'org.hamcrest:hamcrest-library:2.1'
+    testImplementation ('junit:junit:4.13-beta-3') {
+        exclude module: 'hamcrest-core'
+    }
+    testImplementation "org.mockito:mockito-core:2.18.0"
+    testImplementation "org.powermock:powermock-module-junit4:1.7.4"
+    testImplementation "org.powermock:powermock-api-mockito:1.7.4"
 }
 
 buildscript {
