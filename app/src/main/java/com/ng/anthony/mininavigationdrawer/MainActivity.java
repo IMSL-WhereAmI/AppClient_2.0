@@ -139,10 +139,19 @@ public class MainActivity extends AppCompatActivity {
 
     private static String[] BLE_MACS1 = new String[]{"0C:EC:80:FE:8C:CC","0C:EC:80:FF:10:FA","0C:EC:80:FE:7B:E9","0C:EC:80:FF:0F:B2","0C:EC:80:FE:82:AC"};
     private static String[] BLE_MACS2 = new String[]{"C5:7A:11:D5:98:6F","FA:0C:4B:97:A0:0E","CA:5D:8F:59:87:1C","E0:A8:DE:AA:B4:C4","D1:42:7A:BB:E0:25"};
-    private static int[] ble_rssi = new int[BLE_MACS1.length];
+    private static int[] ble_rssi = new int[BLE_MACS2.length];
+    private static List<List<Integer>> ble_rssi_list = new ArrayList<List<Integer>>();
     private static void reset(int[] rssi){
         for(int i = 0; i < rssi.length; i++)
             rssi[i] = -100;
+    }
+    private static void ble_clear(){
+        ble_rssi_list.clear();
+        for(int i = 0; i < BLE_MACS2.length; i++){
+            List<Integer> list = new ArrayList<Integer>();
+            list.add(-100);
+            ble_rssi_list.add(list);
+        }
     }
     //wifi
     List<String> wifilable = new ArrayList<>();
@@ -171,11 +180,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
                 super.onScanResult(callbackType, result);
-                // BLE_MACS1表示使用第一组mac地址
                 if(Arrays.asList(BLE_MACS2).contains(result.getDevice().toString())){
-                    ble_rssi[Arrays.asList(BLE_MACS2).indexOf(result.getDevice().toString())] = result.getRssi();
-                    Log.d("scanResult", result.toString());
+                    ble_rssi_list.get(Arrays.asList(BLE_MACS2).indexOf(result.getDevice().toString())).add(0,result.getRssi());
                 }
+//                // BLE_MACS1表示使用第一组mac地址
+//                if(Arrays.asList(BLE_MACS2).contains(result.getDevice().toString())){
+//                    ble_rssi[Arrays.asList(BLE_MACS2).indexOf(result.getDevice().toString())] = result.getRssi();
+//                    Log.d("scanResult", result.toString());
+//                }
             }
 
             @Override
@@ -228,8 +240,6 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(MainActivity.this, "permissionCheck over, deviceId:" + deviceId, Toast.LENGTH_SHORT).show();
     }
 
-
-
     public void permissionCheck(){
         // for magnetic location
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.BODY_SENSORS)
@@ -262,7 +272,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     private void setBleScanRule() { //蓝牙扫描规则
         String[] names;
         String BLE_names = "A207-01,A207-02,A207-03,A207-04,A207-05,A207-06,A207-07,A207-08,A207-09,A207-10," +
@@ -286,7 +295,78 @@ public class MainActivity extends AppCompatActivity {
         return simpleDateFormat.format(date);
     }
 
+    public static int majorityElement(Integer[] nums) {//求众数
+        int len = nums.length;
+        int count = 0;
+        Integer max = nums[0];
+        for(int i = 1; i < len-1; i++){
+            if(max == nums[i]){
+                count++;
+            }else{
+                count--;
+                if(count == 0){
+                    max = nums[i];
+                    count++;
+                }
+            }
+        }
+        return max.intValue();
+    }
+
+    public static int frequentElement(Integer[] nums){
+        Arrays.sort(nums);
+        int index = nums.length/2, len = index/2;
+        Integer count = 1+len*2;
+        Integer sum = nums[index];
+        for(int i = 1;i<=len;i++){
+            sum += (nums[index-1]+nums[index+1]);
+            //-100 -89 -82 -82 -80 -70 -70 -70
+        }
+        sum /= count;
+        return sum.intValue();
+    }
+
+    public static int[] GetFrequentRssi(List<List<Integer>> list){
+        int[] rssi = new int[list.size()];
+        for(int i = 0; i < list.size(); i++){
+            Integer[] nums = new Integer[list.get(i).size()];
+            //int fre_rssi = majorityElement(list.get(i).toArray(nums));
+            int fre_rssi = frequentElement(list.get(i).toArray(nums));
+            rssi[i] = fre_rssi;
+        }
+        return rssi;
+    }
+
     public static class SaveScanRes extends TimerTask {//计时器保存蓝牙扫描数据
+        @Override
+        public void run() {
+            Blecount++;
+            ble_rssi = GetFrequentRssi(ble_rssi_list);
+            String data = Arrays.toString(ble_rssi);
+            Log.i("BleData", data);
+            try {
+                String result =  HttpHelper.sendJsonPost("",data,"bluetooth",0,Blecount);
+                Log.d("BleResult", result);
+                Map maps = (Map)JSON.parse(result);
+                String status = maps.get("status").toString();
+                if(status!=null && ("1").equals(status)) {
+                    String TermLoc = maps.get("TermLoc").toString();
+                    Log.d("TermLoc", TermLoc);
+                    TermLoc = TermLoc.substring(1, TermLoc.length() - 1);
+                    String[] str = TermLoc.split(",");
+                    float X = Float.parseFloat(str[0]);
+                    float Y = Float.parseFloat(str[1]);
+                    Log.d("BleResData", "XY: " + X + " " + Y);
+                    BleData.setLocationResult(X, Y);
+                }
+            } catch (JSONException | IOException e) {
+                e.printStackTrace();
+            }
+            ble_clear();//时间段内统计数据清空
+        }
+    }
+
+    public static class SaveScanRes1 extends TimerTask {//计时器保存蓝牙扫描数据
         @Override
         public void run() {
             Blecount++;
@@ -313,7 +393,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (JSONException | IOException e) {
                 e.printStackTrace();
             }
-            //reset(ble_rssi);
+            reset(ble_rssi);
         }
     }
 
@@ -607,11 +687,11 @@ public class MainActivity extends AppCompatActivity {
 
                 List<ScanFilter> filters = new ArrayList<>();
 
-                //filters.add(new ScanFilter.Builder().setServiceUuid(mUuid).build());
-                scanner.startScan(filters, settings, scanCallback);
-
                 Blecount = 0;
                 reset(ble_rssi);
+                ble_clear();
+                //filters.add(new ScanFilter.Builder().setServiceUuid(mUuid).build());
+                scanner.startScan(filters, settings, scanCallback);
 //                //初始化及配置
 //                BleManager.getInstance().init(getApplication());
 //                BleManager.getInstance()
