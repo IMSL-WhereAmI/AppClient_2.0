@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
             "A207-31","A207-32","A207-33","A207-34","A207-35","A207-36","A207-37","A207-38"};
 
     private static String[] BLE_MACS1 = new String[]{"0C:EC:80:FE:8C:CC","0C:EC:80:FF:10:FA","0C:EC:80:FE:7B:E9","0C:EC:80:FF:0F:B2","0C:EC:80:FE:82:AC"};
-    private static String[] BLE_MACS2 = new String[]{"C5:7A:11:D5:98:6F","FA:0C:4B:97:A0:0E","CA:5D:8F:59:87:1C","E0:A8:DE:AA:B4:C4","D1:42:7A:BB:E0:25"};
+    private static String[] BLE_MACS2 = new String[]{"0C:EC:80:FE:8C:CC","0C:EC:80:FF:10:FA","0C:EC:80:FE:7B:E9","0C:EC:80:FF:0F:B2","0C:EC:80:FE:82:AC", "C5:7A:11:D5:98:6F","FA:0C:4B:97:A0:0E","CA:5D:8F:59:87:1C","E0:A8:DE:AA:B4:C4","D1:42:7A:BB:E0:25"};
     private static int[] ble_rssi = new int[BLE_MACS2.length];
     private static List<List<Integer>> ble_rssi_list = new ArrayList<List<Integer>>();
     private static void reset(int[] rssi){
