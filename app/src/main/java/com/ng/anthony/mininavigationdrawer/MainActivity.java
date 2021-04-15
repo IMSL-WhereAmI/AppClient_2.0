@@ -313,6 +313,31 @@ public class MainActivity extends AppCompatActivity {
         return max.intValue();
     }
 
+    public static int getpartElement(Integer[] nums) {
+        int range[][]={{-100,-95},{-95,-90},{-90,-85},{-85,-80},{-80,-75},{-75,-70}, {-70,-65},
+                {-65,-60},{-60,-55},{-55,-50},{-50,-45},{-45,-40},{-40,-35},{-35,-30}};
+        int x[] = new int[range.length];
+        Arrays.sort(nums);
+        int max_count = 0, count = 0;
+        int max_sum = 0, sum = 0;
+        for(int j = 0;j<range.length;j++){//对每个区间
+            count = 0;
+            sum = 0;
+            for(int i = 1;i<nums.length;i++){//对每个rssi
+                if(range[j][0] <= nums[i] && nums[i] <= range[j][1]){
+                    count++;
+                    sum+=nums[i];
+                }
+            }
+            if(count > max_count){
+                max_count = count;
+                max_sum = sum;
+            }
+        }
+        max_sum /= max_count;
+        return max_sum;
+    }
+
     public static int frequentElement(Integer[] nums){
         Arrays.sort(nums);
         int index = nums.length/2, len = index/2;
@@ -330,8 +355,8 @@ public class MainActivity extends AppCompatActivity {
         int[] rssi = new int[list.size()];
         for(int i = 0; i < list.size(); i++){
             Integer[] nums = new Integer[list.get(i).size()];
-            //int fre_rssi = majorityElement(list.get(i).toArray(nums));
-            int fre_rssi = frequentElement(list.get(i).toArray(nums));
+            int fre_rssi = getpartElement(list.get(i).toArray(nums));
+            //int fre_rssi = frequentElement(list.get(i).toArray(nums));
             rssi[i] = fre_rssi;
         }
         return rssi;
