@@ -313,11 +313,25 @@ public class MainActivity extends AppCompatActivity {
         return max.intValue();
     }
 
+    public static int frequentElement(Integer[] nums){
+        Arrays.sort(nums);
+        int index = nums.length/2, len = index/2;
+        Integer count = 1+len*2;
+        Integer sum = nums[index];
+        for(int i = 1;i<=len;i++){
+            sum += (nums[index-1]+nums[index+1]);
+            //-100 -89 -82 -82 -80 -70 -70 -70
+        }
+        sum /= count;
+        return sum.intValue();
+    }
+
     public static int[] GetFrequentRssi(List<List<Integer>> list){
         int[] rssi = new int[list.size()];
         for(int i = 0; i < list.size(); i++){
             Integer[] nums = new Integer[list.get(i).size()];
-            int fre_rssi = majorityElement(list.get(i).toArray(nums));
+            //int fre_rssi = majorityElement(list.get(i).toArray(nums));
+            int fre_rssi = frequentElement(list.get(i).toArray(nums));
             rssi[i] = fre_rssi;
         }
         return rssi;
