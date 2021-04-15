@@ -316,7 +316,6 @@ public class MainActivity extends AppCompatActivity {
     public static int getpartElement(Integer[] nums) {
         int range[][]={{-100,-95},{-95,-90},{-90,-85},{-85,-80},{-80,-75},{-75,-70}, {-70,-65},
                 {-65,-60},{-60,-55},{-55,-50},{-50,-45},{-45,-40},{-40,-35},{-35,-30}};
-        int x[] = new int[range.length];
         Arrays.sort(nums);
         int max_count = 0, count = 0;
         int max_sum = 0, sum = 0;
