@@ -138,7 +138,27 @@ public class MainActivity extends AppCompatActivity {
             "A207-31","A207-32","A207-33","A207-34","A207-35","A207-36","A207-37","A207-38"};
 
     private static String[] BLE_MACS1 = new String[]{"0C:EC:80:FE:8C:CC","0C:EC:80:FF:10:FA","0C:EC:80:FE:7B:E9","0C:EC:80:FF:0F:B2","0C:EC:80:FE:82:AC"};
-    private static String[] BLE_MACS2 = new String[]{"0C:EC:80:FE:8C:CC","0C:EC:80:FF:10:FA","0C:EC:80:FE:7B:E9","0C:EC:80:FF:0F:B2","0C:EC:80:FE:82:AC", "C5:7A:11:D5:98:6F","FA:0C:4B:97:A0:0E","CA:5D:8F:59:87:1C","E0:A8:DE:AA:B4:C4","D1:42:7A:BB:E0:25"};
+    //private static String[] BLE_MACS2 = new String[]{"0C:EC:80:FE:8C:CC","0C:EC:80:FF:10:FA","0C:EC:80:FE:7B:E9","0C:EC:80:FF:0F:B2","0C:EC:80:FE:82:AC", "C5:7A:11:D5:98:6F","FA:0C:4B:97:A0:0E","CA:5D:8F:59:87:1C","E0:A8:DE:AA:B4:C4","D1:42:7A:BB:E0:25"};
+    private static String[] BLE_MACS2 = new String[]{"80:EC:CA:CD:05:CB", "80:EC:CA:CD:05:C0",
+                                                        "80:EC:CA:CD:05:C5", "80:EC:CA:CD:06:1D",
+                                                        "80:EC:CA:CD:05:C7", "80:EC:CA:CD:05:C4",
+                                                        "80:EC:CA:CD:05:E6", "80:EC:CA:CD:05:ED",
+                                                        "80:EC:CA:CD:05:D5", "80:EC:CA:CD:05:C9",
+                                                        "80:EC:CA:CD:06:28", "80:EC:CA:CD:06:20",
+                                                        "80:EC:CA:CD:05:C2", "80:EC:CA:CD:05:D2",
+                                                        "80:EC:CA:CD:05:C1", "80:EC:CA:CD:05:E8",
+                                                        "80:EC:CA:CD:05:EC", "80:EC:CA:CD:05:DD",
+                                                        "80:EC:CA:CD:06:23", "80:EC:CA:CD:05:D4",
+                                                        "80:EC:CA:CD:05:C3", "80:EC:CA:CD:06:1E",
+                                                        "80:EC:CA:CD:05:E4", "80:EC:CA:CD:05:E5",
+                                                        "80:EC:CA:CD:06:24", "80:EC:CA:CD:06:21",
+                                                        "80:EC:CA:CD:05:E0", "80:EC:CA:CD:05:D6",
+                                                        "80:EC:CA:CD:05:CA", "80:EC:CA:CD:06:26",
+                                                        "80:EC:CA:CD:05:EF", "80:EC:CA:CD:05:EE",
+                                                        "80:EC:CA:CD:05:CC", "80:EC:CA:CD:05:D3",
+                                                        "80:EC:CA:CD:06:1F", "80:EC:CA:CD:06:27",
+                                                        "80:EC:CA:CD:05:E9", "80:EC:CA:CD:05:EB",
+                                                        "80:EC:CA:CD:06:25", "80:EC:CA:CD:05:E7"};
     private static int[] ble_rssi = new int[BLE_MACS2.length];
     private static List<List<Integer>> ble_rssi_list = new ArrayList<List<Integer>>();
     private static void reset(int[] rssi){
@@ -182,6 +202,7 @@ public class MainActivity extends AppCompatActivity {
                 super.onScanResult(callbackType, result);
                 if(Arrays.asList(BLE_MACS2).contains(result.getDevice().toString())){
                     ble_rssi_list.get(Arrays.asList(BLE_MACS2).indexOf(result.getDevice().toString())).add(0,result.getRssi());
+                    Log.d("scanResult", result.toString());
                 }
 //                // BLE_MACS1表示使用第一组mac地址
 //                if(Arrays.asList(BLE_MACS2).contains(result.getDevice().toString())){
@@ -333,6 +354,8 @@ public class MainActivity extends AppCompatActivity {
                 max_sum = sum;
             }
         }
+        if (max_count == 0)
+            return -100;
         max_sum /= max_count;
         return max_sum;
     }
@@ -434,7 +457,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.i("onScanStarted", "onScanStarted: failed");
                 }
                 timer = new Timer();
-                timer.schedule(new SaveScanRes(), 500, 1000);
+                timer.schedule(new SaveScanRes(), 2000, 2000);
             }
 
             @Override
@@ -477,8 +500,8 @@ public class MainActivity extends AppCompatActivity {
                 else {
                     Log.i("onScanStarted", "onScanStarted: failed");
                 }
-                timer = new Timer();
-                timer.schedule(new SaveScanRes_addmag(), 500, 1000);
+//                timer = new Timer();
+//                timer.schedule(new SaveScanRes_addmag(), 500, 1000);
             }
 
             @Override
@@ -739,7 +762,7 @@ public class MainActivity extends AppCompatActivity {
                 LocationResult lr = new LocationResult(tCode);//赋值xy，广播更新
                 future2 = service.scheduleAtFixedRate(lr, 1, 1, TimeUnit.SECONDS);
                 timer = new Timer();
-                timer.schedule(new SaveScanRes(), 500, 1000);
+                timer.schedule(new SaveScanRes(), 2000, 2000);
             }
 
             if (tCode == "T10202"){
