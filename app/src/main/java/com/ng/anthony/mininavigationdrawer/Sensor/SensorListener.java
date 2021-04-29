@@ -1,13 +1,18 @@
+
+
 package com.ng.anthony.mininavigationdrawer.Sensor;
 
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.util.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import static com.ng.anthony.mininavigationdrawer.MainActivity.GetSystemTime;
 
 
 /**
@@ -16,7 +21,8 @@ import java.util.Date;
 
 public class SensorListener implements SensorEventListener{
 
-    private static int[] SYNC = {0,0,0,0,0,0};
+    private static com.clj.blesample.FileUtil fileUtil;
+    private static int[] SYNC = {0,0,0,0,0,0,0};
     private String[] accelerometerData;
     private String[] magneticData ;
     private String[] orientationData ;
@@ -27,6 +33,14 @@ public class SensorListener implements SensorEventListener{
     private String stepCount;
     private String temp;
 
+    private float[] I = new float[9];
+    private float[] r = new float[9];
+    private float[] acceler = null;
+    private float[] gravity = null;
+    private float[] geomagnetic = null;
+    private float[] orien = new float[3];
+    private final float alpha = (float) 0.8;
+    private float[] acc2gra = new float[3];
 
     @Override
     public void onSensorChanged(SensorEvent event){
@@ -41,6 +55,13 @@ public class SensorListener implements SensorEventListener{
                 break;
             }
             case Sensor.TYPE_ACCELEROMETER:{
+                acceler = event.values;
+
+                //Isolate the force of gravity with the low-pass filter.
+                acc2gra[0] = alpha * acc2gra[0] + (1 - alpha) * event.values[0];
+                acc2gra[1] = alpha * acc2gra[1] + (1 - alpha) * event.values[1];
+                acc2gra[2] = alpha * acc2gra[2] + (1 - alpha) * event.values[2];
+
                 accelerometerData = new String[3];
                 accelerometerData[0] = ""+event.values[0];
                 accelerometerData[1] = ""+event.values[1];
@@ -59,10 +80,10 @@ public class SensorListener implements SensorEventListener{
                 orientationData[1] = ""+event.values[1];
                 orientationData[2] = ""+event.values[2];
                 SYNC[2] = 1;
-//                Log.d("capsensordata_o", orientationData[1]);
                 break;
             }
             case Sensor.TYPE_MAGNETIC_FIELD:{
+                geomagnetic = event.values;
                 magneticData = new String[3];
                 magneticData[0] = ""+event.values[0];
                 magneticData[1] = ""+event.values[1];
@@ -86,19 +107,39 @@ public class SensorListener implements SensorEventListener{
                 SYNC[5] = 1;
                 break;
             }
+            case Sensor.TYPE_GRAVITY:{
+                gravity = event.values;
+                SYNC[6] = 1;
+                break;
+            }
             default:
                 break;
         }
 
         if(sync()) {
             String captime = getCurrentTime();
-            //Log.d("SensorListener",accelerometerData[0]+ " "+accelerometerData[1]+ " "+accelerometerData[2]+ " " +stepCount);
-            //String[] stepData = new String[3];
-            //stepData[1] = stepCounterData;
-            //stepData[0] = stepDetectorData;
-            //stepData[2] = stepCount;
-//            Log.d("TAG", "addSensorData: "+magneticData[0]);
-//            System.out.println("addSensorData: "+magneticData[0]+" "+magneticData[1]+" "+magneticData[2]);
+            fileUtil = new com.clj.blesample.FileUtil();
+
+            if(SensorManager.getRotationMatrix(r, I, acc2gra, geomagnetic)){
+
+                float [] A_W = new float[3];
+                A_W[0] = r[0] * geomagnetic[0] + r[1] * geomagnetic[1] + r[2] * geomagnetic[2];
+                A_W[1] = r[3] * geomagnetic[0] + r[4] * geomagnetic[1] + r[5] * geomagnetic[2];
+                A_W[2] = r[6] * geomagnetic[0] + r[7] * geomagnetic[1] + r[8] * geomagnetic[2];
+                geomagnetic[0] = A_W[0];
+                geomagnetic[1] = A_W[1];
+                geomagnetic[2] = A_W[2];
+//                Log.d("test", "校准磁强："+geomagnetic[0]+" "+geomagnetic[1]+" "+geomagnetic[2]);
+
+
+                SensorManager.getOrientation(r, orien);
+
+                //Log.d("test", "旋转角: "+ (float)Math.toDegrees(orien[0])+" "+(float)Math.toDegrees(orien[1])+" "+(float)Math.toDegrees(orien[2]));
+
+            }
+
+
+
             SensorData.addSensorData(magneticData, accelerometerData, orientationData,
                     gyroscopeData, stepCount, accnorm, captime);
             BleMagData.addSensorData(magneticData, accelerometerData, orientationData,
@@ -114,13 +155,9 @@ public class SensorListener implements SensorEventListener{
     }
 
     public boolean sync(){
-//        for(int i = 0 ; i < 4 ; i++){
-//            if(SYNC[i] == 0)
-//                return false;
-//        }
 
-        if(SYNC[3] == 1&&SYNC[1] == 1){
-            //Log.d("SensorListener", "Sensor collect success！");
+        if(SYNC[3] == 1&&SYNC[1] == 1&&SYNC[6] == 1){
+//            Log.d("SensorListener", "Sensor collect success！");
             return true;
         }
         else

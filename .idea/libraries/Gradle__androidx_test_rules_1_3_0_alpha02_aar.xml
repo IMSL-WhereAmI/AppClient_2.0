@@ -1,0 +1,16 @@
+<component name="libraryTable">
+  <library name="Gradle: androidx.test:rules:1.3.0-alpha02@aar">
+    <CLASSES>
+      <root url="file://$APPLICATION_HOME_DIR$/.gradle/caches/transforms-2/files-2.1/56d615a3a824a716249ad86eaa10b9ed/rules-1.3.0-alpha02/res" />
+      <root url="file://$APPLICATION_HOME_DIR$/.gradle/caches/transforms-2/files-2.1/0dba8573aa5d428db34b2c8429b91b49/rules-1.3.0-alpha02/res" />
+      <root url="file://$APPLICATION_HOME_DIR$/.gradle/caches/transforms-2/files-2.1/0dba8573aa5d428db34b2c8429b91b49/rules-1.3.0-alpha02/AndroidManifest.xml" />
+      <root url="jar://$APPLICATION_HOME_DIR$/.gradle/caches/transforms-2/files-2.1/0dba8573aa5d428db34b2c8429b91b49/rules-1.3.0-alpha02/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$APPLICATION_HOME_DIR$/.gradle/caches/modules-2/files-2.1/androidx.test/rules/1.3.0-alpha02/b95671839162f60568275396cc186e069b12cd2c/rules-1.3.0-alpha02-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$APPLICATION_HOME_DIR$/.gradle/caches/modules-2/files-2.1/androidx.test/rules/1.3.0-alpha02/4a8d0c1b9a8b29d1b938cf4a8e3dfa9aba1c610e/rules-1.3.0-alpha02-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

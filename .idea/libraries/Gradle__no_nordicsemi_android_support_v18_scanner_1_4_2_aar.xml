@@ -1,0 +1,16 @@
+<component name="libraryTable">
+  <library name="Gradle: no.nordicsemi.android.support.v18:scanner:1.4.2@aar">
+    <CLASSES>
+      <root url="file://$APPLICATION_HOME_DIR$/.gradle/caches/transforms-2/files-2.1/d65d05efa2c74e21cb200399725233e3/scanner-1.4.2/res" />
+      <root url="jar://$APPLICATION_HOME_DIR$/.gradle/caches/transforms-2/files-2.1/b2c28ec6b088f82e73a9a834a8401352/scanner-1.4.2/jars/classes.jar!/" />
+      <root url="file://$APPLICATION_HOME_DIR$/.gradle/caches/transforms-2/files-2.1/b2c28ec6b088f82e73a9a834a8401352/scanner-1.4.2/res" />
+      <root url="file://$APPLICATION_HOME_DIR$/.gradle/caches/transforms-2/files-2.1/b2c28ec6b088f82e73a9a834a8401352/scanner-1.4.2/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$APPLICATION_HOME_DIR$/.gradle/caches/modules-2/files-2.1/no.nordicsemi.android.support.v18/scanner/1.4.2/28efef4e84941509d59c7a3476a30f883c8e0255/scanner-1.4.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$APPLICATION_HOME_DIR$/.gradle/caches/modules-2/files-2.1/no.nordicsemi.android.support.v18/scanner/1.4.2/fbff249462803afda591b711f464838fd0434d22/scanner-1.4.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
