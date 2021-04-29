@@ -121,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
     private Sensor orientationSensor;
     private Sensor stepCounterSensor;
     private Sensor stepDetecterSensor;
+    private Sensor gravitySensor;
     private ScheduledFuture future1;
     private ScheduledFuture future2;
     private Timer timer;
@@ -215,6 +216,7 @@ public class MainActivity extends AppCompatActivity {
         accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magneticSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         orientationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+        gravitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
         stepCounterSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         stepDetecterSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
         gyroscopeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
@@ -678,6 +680,8 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
                 if(!sensorManager.registerListener(sensorListener, gyroscopeSensor, SensorManager.SENSOR_DELAY_FASTEST))
                     Toast.makeText(MainActivity.this, "陀螺仪不可用", Toast.LENGTH_SHORT).show();
+                if(!sensorManager.registerListener(sensorListener,gravitySensor,SensorManager.SENSOR_DELAY_FASTEST))
+                    Toast.makeText(MainActivity.this, "重力传感器不可用", Toast.LENGTH_SHORT).show();
 
                 ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
                 SensorCollector instance = new SensorCollector(tCode,mapIndex,deviceId);//发送地磁，返回坐标
@@ -699,6 +703,8 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
                 if(!sensorManager.registerListener(sensorListener, gyroscopeSensor, SensorManager.SENSOR_DELAY_FASTEST))
                     Toast.makeText(MainActivity.this, "陀螺仪不可用", Toast.LENGTH_SHORT).show();
+                if(!sensorManager.registerListener(sensorListener,gravitySensor,SensorManager.SENSOR_DELAY_FASTEST))
+                    Toast.makeText(MainActivity.this, "重力传感器不可用", Toast.LENGTH_SHORT).show();
                 ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
                 FusionCollector instance = new FusionCollector(getApplicationContext(),wifiManager, tCode, mapIndex, deviceId);//发送融合信号，返回坐标
                 LocationResult lr = new LocationResult(tCode);//赋值xy，广播更新
@@ -757,6 +763,8 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
                 if(!sensorManager.registerListener(sensorListener, gyroscopeSensor, SensorManager.SENSOR_DELAY_FASTEST))
                     Toast.makeText(MainActivity.this, "陀螺仪不可用", Toast.LENGTH_SHORT).show();
+                if(!sensorManager.registerListener(sensorListener,gravitySensor,SensorManager.SENSOR_DELAY_FASTEST))
+                    Toast.makeText(MainActivity.this, "重力传感器不可用", Toast.LENGTH_SHORT).show();
 
                 //蓝牙初始化及配置
                 reset(ble_rssi);
@@ -877,8 +885,8 @@ public class MainActivity extends AppCompatActivity {
             }
             else if (mapIndex == "02"){
                 imageView = (ImageView) findViewById(R.id.map2_image);
-                width = 1271;
-                height = 842;
+                width = 1403;
+                height = 570;
             }
 
             if(changeMapflag==true){
@@ -971,7 +979,6 @@ public class MainActivity extends AppCompatActivity {
             //Log.d("LocationResult", "run: ");
             if(tCode == "T10101"){
                 locationResult = WifiData.getLocationResult();
-                //Log.d("LocationResult", "run: "+locationResult[0]+" "+locationResult[1]);
                 X = locationResult[0];
                 Y = locationResult[1];
                 sendBroadcast(intent);
