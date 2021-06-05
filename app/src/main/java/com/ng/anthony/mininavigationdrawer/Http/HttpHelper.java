@@ -51,7 +51,7 @@ public class HttpHelper {
 
     private MainActivity mainActivity;
 
-    public static String sendJsonPost(String magdata,String wifidata, String method, Integer ApNum,Integer count) throws JSONException, IOException {
+    public static String sendJsonPost(String magdata,String wifidata, String accdata, String oriendata, String method, Integer ApNum,Integer count) throws JSONException, IOException {
         String json = null;
 
         if(method.equals("wifi")) {
@@ -72,6 +72,8 @@ public class HttpHelper {
             jsonObject.put("MapIdx", "01");
             jsonObject.put("MagData", magdata);
             jsonObject.put("WifiData", wifidata);
+            jsonObject.put("AccData", accdata);
+            jsonObject.put("OrienData", oriendata);
             json = jsonObject.toString();
         }else if(method.equals("fusion")){
             JSONObject jsonObject = new JSONObject();
@@ -95,13 +97,14 @@ public class HttpHelper {
             json = jsonObject.toString();
         }else if(method.equals("BleMag")){
             JSONObject jsonObject = new JSONObject();
+            jsonObject.put("CountNum", count);
             jsonObject.put("DevID", "0005");
             jsonObject.put("TCode", "T10202");
             jsonObject.put("MapIdx", "01");
-            jsonObject.put("MagData",magdata);
-            jsonObject.put("BleData",wifidata);
-            jsonObject.put("ApNum", ApNum);
-            jsonObject.put("CountNum",count);
+            jsonObject.put("MagData", magdata);
+            jsonObject.put("BleData", wifidata);
+            jsonObject.put("AccData", accdata);
+            jsonObject.put("OrienData", oriendata);
             json = jsonObject.toString();
         }
 

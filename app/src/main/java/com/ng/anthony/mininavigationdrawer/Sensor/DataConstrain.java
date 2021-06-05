@@ -27,7 +27,7 @@ public class DataConstrain {
             flag = getMinIndex(arr);
             if(flag == 0) y=75;
             else if(flag == 1) y=400;
-            else if(flag == 3) x=1310;
+            else if(flag == 3) x=610;
         }
         else if(1555>= x && x >= 1335 && 378 >= y && y >= 100 ){//3
             float[] arr = {Math.abs(y-100), Math.abs(y-378),Math.abs(x-1335), 1600};

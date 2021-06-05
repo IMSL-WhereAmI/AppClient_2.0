@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.ng.anthony.mininavigationdrawer.Http.HttpHelper;
 import com.ng.anthony.mininavigationdrawer.MainActivity;
 
@@ -40,14 +41,18 @@ public class SensorCollector implements Runnable {
     @Override
     public void run() {
         Log.d("SensorCollector","run ");
-        String data = SensorData.getAllDataStr();//每秒将magneticSensorData内的数据发送，并清空（传感器持续往magneticSensorData添加）
-        Log.d("SensorCollector","data "+ data);
-        if("".equals(data)) return;
+        String magdata = SensorData.getAllDataStr();//每秒将magneticSensorData内的数据发送，并清空（传感器持续往magneticSensorData添加）
+        String accdata = SensorData.getAccDataStr();
+        String orientdata = SensorData.getOrientDataStr();
+        //Log.d("SensorCollector","magdata "+ magdata);
+//        Log.d("SensorCollector","accdata "+ accdata);
+//        Log.d("SensorCollector","orientdata "+ orientdata);
+        if("".equals(accdata)||"".equals(orientdata)) return;
         try {
             count++;
-            String result =  HttpHelper.sendJsonPost(data,"","mag",0,count);
+            String result =  HttpHelper.sendJsonPost(magdata,"",accdata,orientdata,"mag",0,count);
             Log.d("SensorCollector","result "+ result);
-            Map maps = (Map)JSON.parse(result);
+            Map maps = (Map) JSON.parse(result);
             String status = maps.get("status").toString();
             if(status!=null && ("1").equals(status)){
                 String TermLoc = maps.get("TermLoc").toString();
@@ -56,7 +61,7 @@ public class SensorCollector implements Runnable {
                 X =Float.parseFloat(str[0]);
                 Y =Float.parseFloat(str[1]);
                 SensorData.setLocationResult(X,Y);
-                Log.d("WifiCollector","XY: " +  X+" "+Y);
+                Log.d("Collector","XY: " +  X+" "+Y);
                 flag = false;
             }
 

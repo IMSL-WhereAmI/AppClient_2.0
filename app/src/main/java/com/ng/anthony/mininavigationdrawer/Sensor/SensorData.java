@@ -23,8 +23,18 @@ public class SensorData {
     public static Integer count = 0;
     private static double[] locationResult = {0,0};
 
+    public static void acc_clear(){
+        if(accelerometerSensorData.size()!=0){
+            accelerometerSensorData.clear();
+        }
+    }
+    public static void orient_clear(){
+        if(orientationSensorData.size()!=0){
+            orientationSensorData.clear();
+        }
+    }
 
-    public static void clear(){
+    public static void mag_clear(){
         if(magneticSensorData.size()!=0){
             magneticSensorData.clear();
         }
@@ -45,13 +55,10 @@ public class SensorData {
                                      String gData[], String stepcount,String accnorm, String captime){
         magneticSensorData.add(mData);
         accelerometerSensorData.add(aData);
+        orientationSensorData.add(oData);
         stepCount = stepcount;
         accnormlist.add(accnorm);
-//        orientationSensorData.add(oData);
-//        stepSensorData.add(sData);
-//        gyroscopeSensorData.add(gData);
-//        timestamps.add(captime);
-//        System.out.println("addSensorData: "+mData[0]+" "+mData[1]+" "+mData[2]);
+        //System.out.println("addSensorData: "+aData[0]+" "+aData[1]+" "+aData[2]);
     }
 
     public static String getFileHead(){
@@ -125,7 +132,34 @@ public class SensorData {
         }else{
             Log.d("SensorData","静止该时间段数据清空");
         }
-        clear();
+        mag_clear();
+        return data;
+    }
+
+    public static String getOrientDataStr(){
+        String data = "";
+        //System.out.println("orient:"+orientationSensorData);
+        if(orientationSensorData.size() == 0) return "";
+        for(int i = 0 ; i < orientationSensorData.size() ; i++){
+            String[] orien = orientationSensorData.get(i);
+            String one_detail = orien[0]+",";
+            data = data + one_detail;
+        }
+        data = data.substring(0,data.length()-1);
+        orient_clear();
+        return data;
+    }
+
+    public static String getAccDataStr(){
+        String data = "";
+        if(accelerometerSensorData.size() == 0) return "";
+        for(int i = 0 ; i < accelerometerSensorData.size() ; i++){
+            String[] acc = accelerometerSensorData.get(i);
+            String one_detail = acc[0] + "," + acc[1] + "," + acc[2]+",";
+            data = data + one_detail;
+        }
+        data = data.substring(0,data.length()-1);
+        acc_clear();
         return data;
     }
 
@@ -136,10 +170,10 @@ public class SensorData {
     }
 
     public static void setLocationResult(float X, float Y){
-        float[] res=DataConstrain.BoxConstrain(X,Y);
+        //float[] res=DataConstrain.BoxConstrain(X,Y);
         if(true){
-            locationResult[0] = res[0];
-            locationResult[1] = res[1];
+            locationResult[0] = X;
+            locationResult[1] = Y;
         }
     }
 

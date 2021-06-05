@@ -37,20 +37,29 @@ public class BleMagCollector implements Runnable {
 
     @Override
     public void run() {
-        String Bledata = BleMagData.getBleDataStr();
-        String Magdata = BleMagData.getAllDataStr();
-        if(Bledata == null || Magdata == null) return;
-        Log.d("BleMagCollector","Bledata "+ Bledata);
-        Log.d("BleMagCollector","Magdata "+ Magdata);
+        String bledata = BleMagData.getBleDataStr();
+        String magdata = BleMagData.getAllDataStr();//每秒将magneticSensorData内的数据发送，并清空（传感器持续往magneticSensorData添加）
+        String accdata = BleMagData.getAccDataStr();
+        String orientdata = BleMagData.getOrientDataStr();
+        if("".equals(magdata)){
+            accdata = "";
+            orientdata = "";
+        }
+        Log.d("BleMagCollector","bledata "+ bledata);
+        Log.d("BleMagCollector","magdata "+ magdata);
+        Log.d("BleMagCollector","accdata "+ accdata);
+        Log.d("BleMagCollector","orientdata "+ orientdata);
+        if("".equals(bledata)) return;
+
         try {
             count++;
-            String result =  HttpHelper.sendJsonPost(Magdata,Bledata,"BleMag",0,count);
+            String result =  HttpHelper.sendJsonPost(magdata,bledata,accdata,orientdata,"BleMag",0,count);
             if(result == null || "".equals(result)){
                 Log.d("BleMagCollector","无效结果");
                 return;
             }
             Log.d("BleMagCollector","result "+ result);
-            Map maps = (Map)JSON.parse(result);
+            Map maps = (Map) JSON.parse(result);
             String status = maps.get("status").toString();
             if(status!=null && ("1").equals(status)){
                 String TermLoc = maps.get("TermLoc").toString();

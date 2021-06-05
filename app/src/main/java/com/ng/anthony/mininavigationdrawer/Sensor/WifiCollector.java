@@ -101,7 +101,7 @@ public class WifiCollector implements Runnable {
         Log.d("Wifidata","data: " +  data);
 
         try {
-            String result =  HttpHelper.sendJsonPost("",data,"wifi", wdlist.size(),0);
+            String result =  HttpHelper.sendJsonPost("",data,"","","wifi", wdlist.size(),0);
             //Log.d("WifiCollector","result: " +  result);
             Map maps = (Map) JSON.parse(result);
             String status = maps.get("status").toString();
