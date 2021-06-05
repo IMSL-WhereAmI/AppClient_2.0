@@ -4,9 +4,9 @@ public class BleData {
     private static double[] locationResult = {0,0};
 
     public static void setLocationResult(float X, float Y){
-        float[] res=DataConstrain.BoxConstrain(X,Y);
-        locationResult[0] = res[0];
-        locationResult[1] = res[1];
+        //float[] res=DataConstrain.BoxConstrain(X,Y);
+        locationResult[0] = X;
+        locationResult[1] = Y;
     }
 
     public static double[] getLocationResult(){
