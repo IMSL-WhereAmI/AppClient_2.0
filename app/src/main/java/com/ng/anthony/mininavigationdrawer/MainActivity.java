@@ -139,15 +139,17 @@ public class MainActivity extends AppCompatActivity {
             "A207-31","A207-32","A207-33","A207-34","A207-35","A207-36","A207-37","A207-38"};
 
     private static String[] BLE_MACS1 = new String[]{"0C:EC:80:FE:8C:CC","0C:EC:80:FF:10:FA","0C:EC:80:FE:7B:E9","0C:EC:80:FF:0F:B2","0C:EC:80:FE:82:AC"};
+
     //private static String[] BLE_MACS2 = new String[]{"0C:EC:80:FE:8C:CC","0C:EC:80:FF:10:FA","0C:EC:80:FE:7B:E9","0C:EC:80:FF:0F:B2","0C:EC:80:FE:82:AC", "C5:7A:11:D5:98:6F","FA:0C:4B:97:A0:0E","CA:5D:8F:59:87:1C","E0:A8:DE:AA:B4:C4","D1:42:7A:BB:E0:25"};
-    private static String[] BLE_MACS2 = new String[]{"80:EC:CA:CD:05:CB", "80:EC:CA:CD:05:C0",
+    //停车场
+    private static String[] BLE_MACS2_PARKING = new String[]{"80:EC:CA:CD:05:CB", "80:EC:CA:CD:05:C0",
                                                         "80:EC:CA:CD:05:C5", "80:EC:CA:CD:06:1D",
                                                         "80:EC:CA:CD:05:C7", "80:EC:CA:CD:05:C4",
                                                         "80:EC:CA:CD:05:E6", "80:EC:CA:CD:05:ED",
                                                         "80:EC:CA:CD:05:D5", "80:EC:CA:CD:05:C9",
                                                         "80:EC:CA:CD:06:28", "80:EC:CA:CD:06:20",
                                                         "80:EC:CA:CD:05:C2", "80:EC:CA:CD:05:D2",
-                                                        "80:EC:CA:CD:05:C1", "80:EC:CA:CD:05:E8",
+                                                        "80:EC52:CA:CD:05:C1", "80:EC:CA:CD:05:E8",
                                                         "80:EC:CA:CD:05:EC", "80:EC:CA:CD:05:DD",
                                                         "80:EC:CA:CD:06:23", "80:EC:CA:CD:05:D4",
                                                         "80:EC:CA:CD:05:C3", "80:EC:CA:CD:06:1E",
@@ -160,6 +162,49 @@ public class MainActivity extends AppCompatActivity {
                                                         "80:EC:CA:CD:06:1F", "80:EC:CA:CD:06:27",
                                                         "80:EC:CA:CD:05:E9", "80:EC:CA:CD:05:EB",
                                                         "80:EC:CA:CD:06:25", "80:EC:CA:CD:05:E7"};
+    //学院2楼
+    private static String[] BLE_MACS2_FLOOR2 = new String[]{"80:EC:CA:CD:12:9B", "80:EC:CA:CD:12:AF",
+            "80:EC:CA:CD:11:F0", "80:EC:CA:CD:12:53",
+            "80:EC:CA:CD:12:AB", "80:EC:CA:CD:12:5F",
+            "80:EC:CA:CD:12:6B", "80:EC:CA:CD:12:8E",
+            "80:EC:CA:CD:12:46", "80:EC:CA:CD:12:41",
+            "80:EC:CA:CD:12:5D", "80:EC:CA:CD:12:AC",
+            "80:EC:CA:CD:12:82", "80:EC:CA:CD:12:48",
+            "80:EC:CA:CD:12:91", "80:EC:CA:CD:12:72",
+            "80:EC:CA:CD:11:E5", "80:EC:CA:CD:12:9D",
+            "80:EC:CA:CD:12:3A", "80:EC:CA:CD:12:74",
+            "80:EC:CA:CD:12:8D", "80:EC:CA:CD:12:3F",
+            "80:EC:CA:CD:12:80", "80:EC:CA:CD:12:0B",
+            "80:EC:CA:CD:11:B2", "80:EC:CA:CD:11:E6",
+            "80:EC:CA:CD:12:3B", "80:EC:CA:CD:11:C8",
+            "80:EC:CA:CD:12:5E", "80:EC:CA:CD:12:7C",
+            "80:EC:CA:CD:12:09", "80:EC:CA:CD:12:99",
+            "80:EC:CA:CD:12:9A", "80:EC:CA:CD:12:75",
+            "80:EC:CA:CD:12:69", "80:EC:CA:CD:12:51",
+            "80:EC:CA:CD:12:4D", "80:EC:CA:CD:12:97",
+            "80:EC:CA:CD:12:94", "80:EC:CA:CD:12:8F"};
+
+    private static String[] BLE_MACS2 = new String[]{"80:EC:CA:CD:12:9B", "80:EC:CA:CD:12:AF",
+            "80:EC:CA:CD:11:F0", "80:EC:CA:CD:12:53",
+            "80:EC:CA:CD:12:AB", "80:EC:CA:CD:12:5F",
+            "80:EC:CA:CD:12:6B", "80:EC:CA:CD:12:8E",
+            "80:EC:CA:CD:12:46", "80:EC:CA:CD:12:41",
+            "80:EC:CA:CD:12:5D", "80:EC:CA:CD:12:AC",
+            "80:EC:CA:CD:12:82", "80:EC:CA:CD:12:48",
+            "80:EC:CA:CD:12:91", "80:EC:CA:CD:12:72",
+            "80:EC:CA:CD:11:E5", "80:EC:CA:CD:12:9D",
+            "80:EC:CA:CD:12:3A", "80:EC:CA:CD:12:74",
+            "80:EC:CA:CD:12:8D", "80:EC:CA:CD:12:3F",
+            "80:EC:CA:CD:12:80", "80:EC:CA:CD:12:0B",
+            "80:EC:CA:CD:11:B2", "80:EC:CA:CD:11:E6",};
+//            "80:EC:CA:CD:12:3B", "80:EC:CA:CD:11:C8",
+//            "80:EC:CA:CD:12:5E", "80:EC:CA:CD:12:7C",
+//            "80:EC:CA:CD:12:09", "80:EC:CA:CD:12:99",
+//            "80:EC:CA:CD:12:9A", "80:EC:CA:CD:12:75",
+//            "80:EC:CA:CD:12:69", "80:EC:CA:CD:12:51",
+//            "80:EC:CA:CD:12:4D", "80:EC:CA:CD:12:97",
+//            "80:EC:CA:CD:12:94", "80:EC:CA:CD:12:8F"};
+
     private static int[] ble_rssi = new int[BLE_MACS2.length];
     private static List<List<Integer>> ble_rssi_list = new ArrayList<List<Integer>>();
     private static void reset(int[] rssi){
@@ -203,7 +248,9 @@ public class MainActivity extends AppCompatActivity {
                 super.onScanResult(callbackType, result);
                 if(Arrays.asList(BLE_MACS2).contains(result.getDevice().toString())){
                     ble_rssi_list.get(Arrays.asList(BLE_MACS2).indexOf(result.getDevice().toString())).add(0,result.getRssi());
-                    Log.d("scanResult", result.toString());
+
+//                    Log.d("scanResult", result.toString());
+
                 }
 //                // BLE_MACS1表示使用第一组mac地址
 //                if(Arrays.asList(BLE_MACS2).contains(result.getDevice().toString())){
@@ -356,8 +403,10 @@ public class MainActivity extends AppCompatActivity {
                 max_sum = sum;
             }
         }
+
         if (max_count == 0)
             return -100;
+
         max_sum /= max_count;
         return max_sum;
     }
@@ -394,7 +443,7 @@ public class MainActivity extends AppCompatActivity {
             String data = Arrays.toString(ble_rssi);
             Log.i("BleData", data);
             try {
-                String result =  HttpHelper.sendJsonPost("",data,"bluetooth",0,Blecount);
+                String result =  HttpHelper.sendJsonPost("",data,"","","bluetooth",Blecount,0);
                 Log.d("BleResult", result);
                 Map maps = (Map)JSON.parse(result);
                 String status = maps.get("status").toString();
@@ -425,7 +474,7 @@ public class MainActivity extends AppCompatActivity {
 
             Log.i("BleData", data);
             try {
-                String result =  HttpHelper.sendJsonPost("",data,"bluetooth",0,Blecount);
+                String result =  HttpHelper.sendJsonPost("",data,"","","bluetooth",Blecount,0);
                 Log.d("BleResult", result);
                 Map maps = (Map)JSON.parse(result);
                 String status = maps.get("status").toString();
@@ -487,8 +536,10 @@ public class MainActivity extends AppCompatActivity {
     public static class SaveScanRes_addmag extends TimerTask {//计时器保存蓝牙扫描数据
         @Override
         public void run() {
+            Blecount++;
+            ble_rssi = GetFrequentRssi(ble_rssi_list);
             BleMagData.addBleData(ble_rssi);
-            //reset(ble_rssi);
+            ble_clear();//时间段内统计数据清空
         }
     }
 
@@ -768,7 +819,10 @@ public class MainActivity extends AppCompatActivity {
                 LocationResult lr = new LocationResult(tCode);//赋值xy，广播更新
                 future2 = service.scheduleAtFixedRate(lr, 1, 1, TimeUnit.SECONDS);
                 timer = new Timer();
-                timer.schedule(new SaveScanRes(), 2000, 2000);
+
+//                timer.schedule(new SaveScanRes(), 2000, 2000);
+                timer.schedule(new SaveScanRes(), 500, 1000);
+
             }
 
             if (tCode == "T10202"){
@@ -789,24 +843,16 @@ public class MainActivity extends AppCompatActivity {
                 if(!sensorManager.registerListener(sensorListener,gravitySensor,SensorManager.SENSOR_DELAY_FASTEST))
                     Toast.makeText(MainActivity.this, "重力传感器不可用", Toast.LENGTH_SHORT).show();
 
-                //蓝牙初始化及配置
+                List<ScanFilter> filters = new ArrayList<>();
+                Blecount = 0;
                 reset(ble_rssi);
-                BleManager.getInstance().init(getApplication());
-                BleManager.getInstance()
-                        .enableLog(true)
-                        .setReConnectCount(1, 5000)
-                        .setConnectOverTime(20000)
-                        .setOperateTimeout(5000);
-                if(!BleManager.getInstance().isSupportBle())
-                    Toast.makeText(MainActivity.this, "当前设备不支持蓝牙", Toast.LENGTH_SHORT).show();
-                if(!BleManager.getInstance().isBlueEnable()){
-                    Toast.makeText(MainActivity.this, "蓝牙未开启", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+                ble_clear();
+                scanner.startScan(filters, settings, scanCallback);
+
+                timer = new Timer();
+                timer.schedule(new SaveScanRes_addmag(), 500, 1000);
 
                 ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
-                setBleScanRule();
-                StartBleScan_addmag();
                 BleMagCollector instance = new BleMagCollector(tCode,mapIndex,deviceId);
                 LocationResult lr = new LocationResult(tCode);//赋值xy，广播更新
                 future1 = service.scheduleAtFixedRate(instance, 0, 1, TimeUnit.SECONDS);
@@ -844,12 +890,14 @@ public class MainActivity extends AppCompatActivity {
                 timer.cancel();
             }
             if (tCode == "T10202"){
-                BleManager.getInstance().cancelScan();
-                BleManager.getInstance().disconnectAllDevice();
-                BleManager.getInstance().destroy();
+                scanner.stopScan(scanCallback);
+//                BleManager.getInstance().cancelScan();
+//                BleManager.getInstance().disconnectAllDevice();
+//                BleManager.getInstance().destroy();
                 future1.cancel(true);
                 future2.cancel(true);
                 sensorManager.unregisterListener(sensorListener);
+                timer.cancel();
             }
         }
         else
@@ -876,6 +924,7 @@ public class MainActivity extends AppCompatActivity {
     public void setMapIndex(String mapIdx){
         this.mapIndex = mapIdx;
         Log.d("TAG", "selectMap: "+mapIdx);
+
     }
 
     private class MyBroadcastReceiver extends BroadcastReceiver {
@@ -936,50 +985,50 @@ public class MainActivity extends AppCompatActivity {
             paint.setStrokeWidth(20);
             // canvas.drawPoint((float) xCor, (float) yCor, paint);
             canvas.drawCircle((float) xCor, (float) yCor, 30,paint);
-
-            //Log.d("paint", "number: "+number);
-            if(number > 0){
-                int i = 0;
-                if(number > 1){//
-                    for (i = 1; i<number; i++){
-                        //Log.d("paint", "xy: "+path_x[i]+" "+path_y[i]);
-                        X_pre = path_x[i];
-                        Y_pre = path_y[i];
-                        float X_ppre = path_x[i-1];
-                        float Y_ppre = path_y[i-1];
-                        double xpreRatio = X_pre / width;
-                        double ypreRatio = Y_pre / height;
-                        double xppreRatio = X_ppre / width;
-                        double yppreRatio = Y_ppre / height;
-                        double xpreCor = xpreRatio * imageView.getWidth();
-                        double ypreCor = ypreRatio * imageView.getHeight();
-                        double xppreCor = xppreRatio * imageView.getWidth();
-                        double yppreCor = yppreRatio * imageView.getHeight();
-                        paint.setStrokeWidth((float) 15.0);
-//                        edit by duke
-//                        if(xpreCor > 0 && ypreCor>0 && xppreCor>0 && yppreCor>0){
-//                            paint.setPathEffect(new DashPathEffect(new float[]{20, 10}, 0));
-//                            canvas.drawLine((float) xppreCor, (float) yppreCor, (float) xpreCor, (float) ypreCor,  paint );
-//                        }
-                    }
-                }else{//number=1
-                    i = 1;
-                }
-                X_pre = path_x[i-1];
-                Y_pre = path_y[i-1];
-//                edit by duke
-//                if(X_pre > 0 && Y_pre>0){
-//                    double xpreRatio = X_pre / width;
-//                    double ypreRatio = Y_pre / height;
-//                    double xpreCor = xpreRatio * imageView.getWidth();
-//                    double ypreCor = ypreRatio * imageView.getHeight();
-//                    paint.setStrokeWidth((float) 5.0);
-//                    canvas.drawLine((float) xCor, (float) yCor, (float) xpreCor, (float) ypreCor,  paint );
+//
+//            //Log.d("paint", "number: "+number);
+//            if(number > 0){
+//                int i = 0;
+//                if(number > 1){//
+//                    for (i = 1; i<number; i++){
+//                        //Log.d("paint", "xy: "+path_x[i]+" "+path_y[i]);
+//                        X_pre = path_x[i];
+//                        Y_pre = path_y[i];
+//                        float X_ppre = path_x[i-1];
+//                        float Y_ppre = path_y[i-1];
+//                        double xpreRatio = X_pre / width;
+//                        double ypreRatio = Y_pre / height;
+//                        double xppreRatio = X_ppre / width;
+//                        double yppreRatio = Y_ppre / height;
+//                        double xpreCor = xpreRatio * imageView.getWidth();
+//                        double ypreCor = ypreRatio * imageView.getHeight();
+//                        double xppreCor = xppreRatio * imageView.getWidth();
+//                        double yppreCor = yppreRatio * imageView.getHeight();
+//                        paint.setStrokeWidth((float) 15.0);
+////                        edit by duke
+////                        if(xpreCor > 0 && ypreCor>0 && xppreCor>0 && yppreCor>0){
+////                            paint.setPathEffect(new DashPathEffect(new float[]{20, 10}, 0));
+////                            canvas.drawLine((float) xppreCor, (float) yppreCor, (float) xpreCor, (float) ypreCor,  paint );
+////                        }
+//                    }
+//                }else{//number=1
+//                    i = 1;
 //                }
-            }
-            path_x[number] = (float) X;
-            path_y[number] = (float) Y;
-            number++;
+//                X_pre = path_x[i-1];
+//                Y_pre = path_y[i-1];
+////                edit by duke
+////                if(X_pre > 0 && Y_pre>0){
+////                    double xpreRatio = X_pre / width;
+////                    double ypreRatio = Y_pre / height;
+////                    double xpreCor = xpreRatio * imageView.getWidth();
+////                    double ypreCor = ypreRatio * imageView.getHeight();
+////                    paint.setStrokeWidth((float) 5.0);
+////                    canvas.drawLine((float) xCor, (float) yCor, (float) xpreCor, (float) ypreCor,  paint );
+////                }
+//            }
+//            path_x[number] = (float) X;
+//            path_y[number] = (float) Y;
+//            number++;
             imageView.setImageBitmap(bitmap);
 
             changeMapflag=false;
@@ -1029,7 +1078,7 @@ public class MainActivity extends AppCompatActivity {
             }
             else if(tCode == "T10202"){
                 locationResult = BleMagData.getLocationResult();
-                //Log.d("LocationResult", "run: "+locationResult[0]+" "+locationResult[1]);
+                Log.d("LocationResult", "run: "+locationResult[0]+" "+locationResult[1]);
                 X = locationResult[0];
                 Y = locationResult[1];
                 sendBroadcast(intent);//发送广播
