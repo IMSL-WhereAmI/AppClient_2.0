@@ -18,6 +18,7 @@ public class SensorData {
     public static List<String[]> stepSensorData = new ArrayList<String[]>();
     public static List<String[]> gyroscopeSensorData = new ArrayList<String[]>();
     public static List<String> accnormlist = new ArrayList<String>();
+    public static List<String> magnormlist = new ArrayList<String>();
     public static String stepCount;
     public static String prestepCount;
     public static Integer count = 0;
@@ -52,12 +53,13 @@ public class SensorData {
 
 
     public static void addSensorData(String[] mData, String[] aData, String[] oData,
-                                     String gData[], String stepcount,String accnorm, String captime){
+                                     String gData[], String stepcount,String accnorm, String magnorm, String captime){
         magneticSensorData.add(mData);
         accelerometerSensorData.add(aData);
         orientationSensorData.add(oData);
         stepCount = stepcount;
         accnormlist.add(accnorm);
+        magnormlist.add(magnorm);
         //System.out.println("addSensorData: "+aData[0]+" "+aData[1]+" "+aData[2]);
     }
 
@@ -111,6 +113,19 @@ public class SensorData {
 */
 
     }
+
+//    public static boolean isStationary_magver(){
+//        double x = Variance(magnormlist);
+//        Log.d("magnorm:",x+" ");
+//        if(Variance(accnormlist) <= 0.1){
+//            //静止
+//            return true;
+//        }else{
+//            //运动
+//            return false;
+//        }
+//
+//    }
 
     public static String getAllDataStr(){//运动静止状态只影响mag数据，wifi数据照常发送
         String data = "";

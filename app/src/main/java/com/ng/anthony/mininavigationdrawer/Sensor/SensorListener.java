@@ -22,21 +22,24 @@ import static com.ng.anthony.mininavigationdrawer.MainActivity.GetSystemTime;
 public class SensorListener implements SensorEventListener{
 
     private static com.clj.blesample.FileUtil fileUtil;
-    private static int[] SYNC = {0,0,0,0,0,0,0};
+    private static int[] SYNC = {0,0,0,0,0,0,0,0};
     private String[] accelerometerData;
     private String[] magneticData ;
     private String[] orientationData ;
     private String[] gyroscopeData;
     private String accnorm;
+    private String magnorm;
     private String stepCounterData = "0";
     private String stepDetectorData = "0";
     private String stepCount;
     private String temp;
+    private String[] accelertempData;
+    private String[] grivaty;
 
     private float[] I = new float[9];
     private float[] r = new float[9];
     private float[] acceler = null;
-    private float[] gravity = null;
+    //private float[] gravity = null;
     private float[] geomagnetic = null;
     private float[] orien = new float[3];
     private final float alpha = (float) 0.8;
@@ -79,6 +82,7 @@ public class SensorListener implements SensorEventListener{
                 orientationData[0] = ""+event.values[0];
                 orientationData[1] = ""+event.values[1];
                 orientationData[2] = ""+event.values[2];
+                AzimuthData.setAzimuth(event.values[0]);
                 SYNC[2] = 1;
                 break;
             }
@@ -88,6 +92,7 @@ public class SensorListener implements SensorEventListener{
                 magneticData[0] = ""+event.values[0];
                 magneticData[1] = ""+event.values[1];
                 magneticData[2] = ""+event.values[2];
+
                 //System.out.println("地磁 "+magneticData);
                 SYNC[3] = 1;
 //                Log.d("capsensordata_m", magneticData[1]);
@@ -108,8 +113,19 @@ public class SensorListener implements SensorEventListener{
                 break;
             }
             case Sensor.TYPE_GRAVITY:{
-                gravity = event.values;
+                grivaty = new String[3];
+                grivaty[0] = ""+event.values[0];
+                grivaty[1] = ""+event.values[1];
+                grivaty[2] = ""+event.values[2];
                 SYNC[6] = 1;
+                break;
+            }
+            case Sensor.TYPE_LINEAR_ACCELERATION:{
+                accelertempData = new String[3];
+                accelertempData[0] = ""+event.values[0];
+                accelertempData[1] = ""+event.values[1];
+                accelertempData[2] = ""+event.values[2];
+                SYNC[7] = 1;
                 break;
             }
             default:
@@ -129,7 +145,14 @@ public class SensorListener implements SensorEventListener{
                 geomagnetic[0] = A_W[0];
                 geomagnetic[1] = A_W[1];
                 geomagnetic[2] = A_W[2];
-//                Log.d("test", "校准磁强："+geomagnetic[0]+" "+geomagnetic[1]+" "+geomagnetic[2]);
+                //Log.d("test", "校准磁强："+geomagnetic[0]+" "+geomagnetic[1]+" "+geomagnetic[2]);
+                magneticData = new String[3];
+                magneticData[0] = ""+A_W[0];
+                magneticData[1] = ""+A_W[1];
+                magneticData[2] = ""+A_W[2];
+
+                temp = String.valueOf(geomagnetic[0]*geomagnetic[0] + geomagnetic[1]*geomagnetic[1] + geomagnetic[2]*geomagnetic[2]) ;
+                magnorm = String.valueOf(Math.sqrt(Double.parseDouble(temp)));
 
 
                 SensorManager.getOrientation(r, orien);
@@ -141,9 +164,10 @@ public class SensorListener implements SensorEventListener{
 
 
             SensorData.addSensorData(magneticData, accelerometerData, orientationData,
-                    gyroscopeData, stepCount, accnorm, captime);
+                    gyroscopeData, stepCount, accnorm, magnorm, captime);
             BleMagData.addSensorData(magneticData, accelerometerData, orientationData,
-                    gyroscopeData, stepCount, accnorm, captime);
+                    gyroscopeData, stepCount, accnorm, magnorm, accelertempData, grivaty, captime);
+
             reset();
         }
 
@@ -155,9 +179,13 @@ public class SensorListener implements SensorEventListener{
     }
 
     public boolean sync(){
+//        Log.d("SYNC3", SYNC[3]+"");
+//        Log.d("SYNC1", SYNC[1]+"");
+//        Log.d("SYNC6", SYNC[6]+"");
+//        Log.d("SYNC7", SYNC[7]+"");
 
-        if(SYNC[3] == 1&&SYNC[1] == 1&&SYNC[6] == 1){
-//            Log.d("SensorListener", "Sensor collect success！");
+        if(SYNC[3] == 1&&SYNC[1] == 1&&SYNC[6] == 1&&SYNC[7] == 1){
+            //Log.d("SensorListener", "Sensor collect success！");
             return true;
         }
         else

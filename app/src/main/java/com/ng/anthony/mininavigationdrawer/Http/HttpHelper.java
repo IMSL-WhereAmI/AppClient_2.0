@@ -46,12 +46,12 @@ import static android.content.ContentValues.TAG;
 
 public class HttpHelper {
 
-    //private static String apiUrl = "https://www.sysu-imsl.com";
-    private static String apiUrl = "http://192.168.137.1:8001";
+    //private static String apiUrl = "http://33998831by.wicp.vip";// Cmax,EMUI
+    public static String apiUrl = "http://33998831by.wicp.vip:49880";// Bmax,HarmonyOs
 
     private MainActivity mainActivity;
 
-    public static String sendJsonPost(String magdata,String wifidata, String accdata, String oriendata, String method, Integer ApNum,Integer count) throws JSONException, IOException {
+    public static String sendJsonPost(String magdata,String wifidata, String accdata, String oriendata, String acctempdata, String grivatydata, String method, Integer ApNum,Integer count,String Mapidx,String deviceId) throws JSONException, IOException {
         String json = null;
 
         if(method.equals("wifi")) {
@@ -67,13 +67,15 @@ public class HttpHelper {
         }else if(method.equals("mag")){
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("CountNum", count);
-            jsonObject.put("DevID", "0002");
+            jsonObject.put("DevID", "0001");
             jsonObject.put("TCode", "T10102");
-            jsonObject.put("MapIdx", "01");
+            jsonObject.put("MapIdx", Mapidx);
             jsonObject.put("MagData", magdata);
-            jsonObject.put("WifiData", wifidata);
+            jsonObject.put("BleData", wifidata);
             jsonObject.put("AccData", accdata);
             jsonObject.put("OrienData", oriendata);
+            jsonObject.put("AcctempData",acctempdata);
+            jsonObject.put("Grivaty",grivatydata);
             json = jsonObject.toString();
         }else if(method.equals("fusion")){
             JSONObject jsonObject = new JSONObject();
@@ -98,19 +100,20 @@ public class HttpHelper {
         }else if(method.equals("BleMag")){
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("CountNum", count);
-            jsonObject.put("DevID", "0005");
+            jsonObject.put("DevID", "0001");
             jsonObject.put("TCode", "T10202");
-            jsonObject.put("MapIdx", "01");
+            jsonObject.put("MapIdx", Mapidx);
             jsonObject.put("MagData", magdata);
             jsonObject.put("BleData", wifidata);
             jsonObject.put("AccData", accdata);
             jsonObject.put("OrienData", oriendata);
+            jsonObject.put("AcctempData",acctempdata);
+            jsonObject.put("Grivaty",grivatydata);
             json = jsonObject.toString();
         }
-
         // HttpClient 6.0被抛弃了
         String result = "";
-        Log.d("json", json);
+        //Log.d("json", json);
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
         OkHttpClient client = new OkHttpClient.Builder()

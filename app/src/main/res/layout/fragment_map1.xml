@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@mipmap/cb_floor2">
+        android:background="@mipmap/floor_v5">
     </ImageView>
 
 </FrameLayout>

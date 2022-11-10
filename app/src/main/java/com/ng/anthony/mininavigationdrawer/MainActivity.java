@@ -11,7 +11,9 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
+import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.net.wifi.WifiManager;
@@ -32,14 +34,19 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.ng.anthony.mininavigationdrawer.Http.HttpHelper;
+import com.ng.anthony.mininavigationdrawer.Sensor.AzimuthData;
 import com.ng.anthony.mininavigationdrawer.Sensor.BleData;
 import com.ng.anthony.mininavigationdrawer.Sensor.BleMagCollector;
+import com.ng.anthony.mininavigationdrawer.Sensor.DataConstrain;
 import com.ng.anthony.mininavigationdrawer.Sensor.BleMagData;
+import com.ng.anthony.mininavigationdrawer.Sensor.MagCollector;
 import com.ng.anthony.mininavigationdrawer.Sensor.SensorCollector;
 import com.ng.anthony.mininavigationdrawer.Sensor.SensorData;
 import com.ng.anthony.mininavigationdrawer.Sensor.SensorListener;
@@ -99,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean flag;   // true: begin location ; false: stop location
     private boolean changeMapflag;
+    private boolean constrain_flag; // true: add_azimuth
 
     private String tCode;
     // T10101 -- wifi mode
@@ -110,12 +118,16 @@ public class MainActivity extends AppCompatActivity {
     private String mapIndex;
     private static double X;
     private static double Y;
+    private static float azimuth;
+    private static Integer state;
 
     private FloatingActionButton fab;
+    private Button control_constrain;
     private WifiManager wifiManager;
     private SensorManager sensorManager;
     private SensorListener sensorListener;
     private Sensor accelerometerSensor;
+    private Sensor accelertempSensor;
     private Sensor gyroscopeSensor;
     private Sensor magneticSensor;
     private Sensor orientationSensor;
@@ -125,8 +137,15 @@ public class MainActivity extends AppCompatActivity {
     private ScheduledFuture future1;
     private ScheduledFuture future2;
     private Timer timer;
+    private Timer viewtimer;
     private static FileUtil fileUtil;
     private static Integer Blecount;
+
+    private TextView getstate;
+    private TextView getstate1;
+
+    private TextView mapView;
+    private TextView methodView;
 
     private BluetoothLeScannerCompat scanner;
     private ScanSettings settings;
@@ -175,28 +194,7 @@ public class MainActivity extends AppCompatActivity {
             "80:EC:CA:CD:12:3A", "80:EC:CA:CD:12:74",
             "80:EC:CA:CD:12:8D", "80:EC:CA:CD:12:3F",
             "80:EC:CA:CD:12:80", "80:EC:CA:CD:12:0B",
-            "80:EC:CA:CD:11:B2", "80:EC:CA:CD:11:E6",
-            "80:EC:CA:CD:12:3B", "80:EC:CA:CD:11:C8",
-            "80:EC:CA:CD:12:5E", "80:EC:CA:CD:12:7C",
-            "80:EC:CA:CD:12:09", "80:EC:CA:CD:12:99",
-            "80:EC:CA:CD:12:9A", "80:EC:CA:CD:12:75",
-            "80:EC:CA:CD:12:69", "80:EC:CA:CD:12:51",
-            "80:EC:CA:CD:12:4D", "80:EC:CA:CD:12:97",
-            "80:EC:CA:CD:12:94", "80:EC:CA:CD:12:8F"};
-
-    private static String[] BLE_MACS2 = new String[]{"80:EC:CA:CD:12:9B", "80:EC:CA:CD:12:AF",
-            "80:EC:CA:CD:11:F0", "80:EC:CA:CD:12:53",
-            "80:EC:CA:CD:12:AB", "80:EC:CA:CD:12:5F",
-            "80:EC:CA:CD:12:6B", "80:EC:CA:CD:12:8E",
-            "80:EC:CA:CD:12:46", "80:EC:CA:CD:12:41",
-            "80:EC:CA:CD:12:5D", "80:EC:CA:CD:12:AC",
-            "80:EC:CA:CD:12:82", "80:EC:CA:CD:12:48",
-            "80:EC:CA:CD:12:91", "80:EC:CA:CD:12:72",
-            "80:EC:CA:CD:11:E5", "80:EC:CA:CD:12:9D",
-            "80:EC:CA:CD:12:3A", "80:EC:CA:CD:12:74",
-            "80:EC:CA:CD:12:8D", "80:EC:CA:CD:12:3F",
-            "80:EC:CA:CD:12:80", "80:EC:CA:CD:12:0B",
-            "80:EC:CA:CD:11:B2", "80:EC:CA:CD:11:E6",};
+            "80:EC:CA:CD:11:B2", "80:EC:CA:CD:11:E6"};
 //            "80:EC:CA:CD:12:3B", "80:EC:CA:CD:11:C8",
 //            "80:EC:CA:CD:12:5E", "80:EC:CA:CD:12:7C",
 //            "80:EC:CA:CD:12:09", "80:EC:CA:CD:12:99",
@@ -204,6 +202,27 @@ public class MainActivity extends AppCompatActivity {
 //            "80:EC:CA:CD:12:69", "80:EC:CA:CD:12:51",
 //            "80:EC:CA:CD:12:4D", "80:EC:CA:CD:12:97",
 //            "80:EC:CA:CD:12:94", "80:EC:CA:CD:12:8F"};
+
+    private static String[] BLE_MACS2 = new String[]{"80:EC:CA:CD:05:CB", "80:EC:CA:CD:05:C0",
+            "80:EC:CA:CD:05:C5", "80:EC:CA:CD:06:1D",
+            "80:EC:CA:CD:05:C7", "80:EC:CA:CD:05:C4",
+            "80:EC:CA:CD:05:E6", "80:EC:CA:CD:05:ED",
+            "80:EC:CA:CD:05:D5", "80:EC:CA:CD:05:C9",
+            "80:EC:CA:CD:06:28", "80:EC:CA:CD:06:20",
+            "80:EC:CA:CD:05:C2", "80:EC:CA:CD:05:D2",
+            "80:EC52:CA:CD:05:C1", "80:EC:CA:CD:05:E8",
+            "80:EC:CA:CD:05:EC", "80:EC:CA:CD:05:DD",
+            "80:EC:CA:CD:06:23", "80:EC:CA:CD:05:D4",
+            "80:EC:CA:CD:05:C3", "80:EC:CA:CD:06:1E",
+            "80:EC:CA:CD:05:E4", "80:EC:CA:CD:05:E5",
+            "80:EC:CA:CD:06:24", "80:EC:CA:CD:06:21",
+            "80:EC:CA:CD:05:E0", "80:EC:CA:CD:05:D6",
+            "80:EC:CA:CD:05:CA", "80:EC:CA:CD:06:26",
+            "80:EC:CA:CD:05:EF", "80:EC:CA:CD:05:EE",
+            "80:EC:CA:CD:05:CC", "80:EC:CA:CD:05:D3",
+            "80:EC:CA:CD:06:1F", "80:EC:CA:CD:06:27",
+            "80:EC:CA:CD:05:E9", "80:EC:CA:CD:05:EB",
+            "80:EC:CA:CD:06:25", "80:EC:CA:CD:05:E7"};
 
     private static int[] ble_rssi = new int[BLE_MACS2.length];
     private static List<List<Integer>> ble_rssi_list = new ArrayList<List<Integer>>();
@@ -234,6 +253,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
         scanner = BluetoothLeScannerCompat.getScanner();
@@ -267,7 +287,16 @@ public class MainActivity extends AppCompatActivity {
 
         flag = false;
         fab = (FloatingActionButton) findViewById(R.id.fab);
+        //fab.setBackground(getResources().getDrawable(R.drawable.wifi));
+        fab.setBackgroundColor(Color.parseColor("#2196F3"));
         fab.setOnClickListener(btn_listener);
+
+        constrain_flag = false;//初始不添加方位角约束
+        DataConstrain.setConstrainMode(constrain_flag);
+
+        control_constrain = (Button) findViewById(R.id.constrain);
+        control_constrain.setOnClickListener(constrain_listener);
+
 
         IntentFilter intentFilter = new IntentFilter();//创建IntentFilter对象
         intentFilter.addAction("update_XY");//IntentFilter对象中添加动作
@@ -282,11 +311,13 @@ public class MainActivity extends AppCompatActivity {
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
         accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        accelertempSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         magneticSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         orientationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
         gravitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
         stepCounterSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         stepDetecterSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
+
         gyroscopeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         fileUtil = new FileUtil();
         permissionCheck();
@@ -294,6 +325,12 @@ public class MainActivity extends AppCompatActivity {
         tCode = "T10102";
         mapIndex = "01";
         changeMapflag=false;
+
+        getstate = (TextView) findViewById(R.id.loc_state);
+        getstate1 = (TextView) findViewById(R.id.loc_state1);
+
+        mapView = (TextView) findViewById(R.id.loc_map);
+        methodView = (TextView) findViewById(R.id.loc_method);
 
         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
@@ -307,7 +344,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         deviceId = tm.getDeviceId();
-        Toast.makeText(MainActivity.this, "permissionCheck over, deviceId:" + deviceId, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(MainActivity.this, "permissionCheck over, deviceId:" + deviceId, Toast.LENGTH_SHORT).show();
     }
 
     public void permissionCheck(){
@@ -443,7 +480,7 @@ public class MainActivity extends AppCompatActivity {
             String data = Arrays.toString(ble_rssi);
             Log.i("BleData", data);
             try {
-                String result =  HttpHelper.sendJsonPost("",data,"","","bluetooth",Blecount,0);
+                String result =  HttpHelper.sendJsonPost("",data,"","","","","bluetooth",Blecount,0,"","");
                 Log.d("BleResult", result);
                 Map maps = (Map)JSON.parse(result);
                 String status = maps.get("status").toString();
@@ -474,7 +511,7 @@ public class MainActivity extends AppCompatActivity {
 
             Log.i("BleData", data);
             try {
-                String result =  HttpHelper.sendJsonPost("",data,"","","bluetooth",Blecount,0);
+                String result =  HttpHelper.sendJsonPost("",data,"","","","","bluetooth",Blecount,0,"","");
                 Log.d("BleResult", result);
                 Map maps = (Map)JSON.parse(result);
                 String status = maps.get("status").toString();
@@ -543,6 +580,34 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public class viewstate extends TimerTask {//显示当前状态
+        @Override
+        public void run() {
+                state = BleMagData.getLocationstate();
+                if(state == 0){
+                    getstate.setText("当前正在收集地磁序列");
+                    getstate1.setText(" ");
+                }
+                else if(state == 1){
+                    getstate.setText("定位方式:");
+                    getstate1.setText("地磁");
+                }
+                else if(state == 2){
+                    getstate.setText("定位方式:");
+                    getstate1.setText("PDR");
+                }
+                else if(state == 3){
+                    getstate.setText("当前处于静止状态");
+                    getstate1.setText(" ");
+                }
+                else if(state == 4){
+                    getstate.setText("当前检测到掉头");
+                    getstate1.setText(" ");
+                }
+
+        }
+    }
+
     private void StartBleScan_addmag(){
         BleManager.getInstance().scan(new BleScanCallback() {
             @Override
@@ -567,6 +632,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
+
             public void onScanning(BleDevice bleDevice) {
             }
 
@@ -672,27 +738,29 @@ public class MainActivity extends AppCompatActivity {
             wifidata.clear();
             ReadWiFifingerprint();
             text = text + "Change to Wifi Mode";
-            Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
             return true;
         }else if(id == R.id.action_magnetic){
             tCode = "T10102";
+            methodView.setText("    地磁定位");
             text = text + "Change to Magnetic Mode";
-            Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
             return true;
         }else if(id == R.id.action_fusion){
             tCode = "T10201";
             text = text + "Change to Fusion Mode";
-            Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
             return true;
         }else if(id == R.id.action_bluetooth){
             tCode = "T10103";
             text = text + "Change to Bluetooth Mode";
-            Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
             return true;
         }else if(id == R.id.action_blemag){
             tCode = "T10202";
-            text = text + "Change to Bluetooth and Magnetic Mode";
-            Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
+            methodView.setText("    地磁+PDR定位");
+            text = text + "Change to Magnetic and Pdr Mode";
+            //Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
             return true;
         }
 
@@ -712,17 +780,37 @@ public class MainActivity extends AppCompatActivity {
     };
      */
 
+    private View.OnClickListener constrain_listener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            flag = !flag;
+            DataConstrain.changeConstrainMode();
+            if (!flag){ //false
+                control_constrain.setText("约束");
+                Log.d("cons_msg:",flag+"");
+            }else{
+                control_constrain.setText("方向约束");
+                Log.d("cons_msg:",flag+"");
+            }
+
+        }
+    };
+
     private View.OnClickListener btn_listener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if (!flag){
-                Snackbar.make(v, "Begin to Location", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+//                Snackbar.make(v, "Begin to Location", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+                //v.setBackground(getResources().getDrawable(R.drawable.map_1));
+                v.setBackgroundColor(Color.rgb(0, 255, 0));
                 beginCollector(tCode);
                 //handler.postDelayed(runnable, 15*1000);
             }else {
-                Snackbar.make(v, "Stop to Location", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+//                Snackbar.make(v, "Stop to Location", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+                //v.setBackground(getResources().getDrawable(R.drawable.wifi));
+                v.setBackgroundColor(Color.rgb(255, 0, 0));
                 stopCollector(tCode);
             }
         }
@@ -733,7 +821,8 @@ public class MainActivity extends AppCompatActivity {
             flag = !flag;
             Log.d("beginCollector", "flag: "+ flag +" tCode:" +tCode);
             if (tCode == "T10101") {
-                Toast.makeText(MainActivity.this, "Begin to Wifi location", Toast.LENGTH_SHORT).show();
+//                getstate.setText("当前正在进行WiFi定位");
+                //Toast.makeText(MainActivity.this, "Begin to Wifi location", Toast.LENGTH_SHORT).show();
                 ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
                 WifiCollector2 instance = new WifiCollector2(getApplicationContext(), wifiManager, tCode, mapIndex, deviceId, wifilable, wifidata);//发送wifi信号，返回坐标
                 LocationResult lr = new LocationResult(tCode);//赋值xy，广播更新
@@ -741,40 +830,58 @@ public class MainActivity extends AppCompatActivity {
                 future2 = service.scheduleAtFixedRate(lr, 0, 1, TimeUnit.SECONDS);
             }
             if (tCode == "T10102"){
-                Toast.makeText(MainActivity.this, "Begin to Magnetic location", Toast.LENGTH_SHORT).show();
+               // getstate.setText("当前正在进行地磁定位");
+                //Toast.makeText(MainActivity.this, "Begin to Magnetic location", Toast.LENGTH_SHORT).show();
                 if(!sensorManager.registerListener(sensorListener, accelerometerSensor, SensorManager.SENSOR_DELAY_FASTEST ))
                     Toast.makeText(MainActivity.this, "加速度传感器不可用", Toast.LENGTH_SHORT).show();
                 if(!sensorManager.registerListener(sensorListener, magneticSensor, SensorManager.SENSOR_DELAY_FASTEST))
                     Toast.makeText(MainActivity.this, "磁场传感器不可用", Toast.LENGTH_SHORT).show();//监听收集地磁
                 if(!sensorManager.registerListener(sensorListener, orientationSensor, SensorManager.SENSOR_DELAY_FASTEST))
                     Toast.makeText(MainActivity.this, "方向传感器不可用", Toast.LENGTH_SHORT).show();
-                if(!sensorManager.registerListener(sensorListener, stepCounterSensor, SensorManager.SENSOR_DELAY_FASTEST))
-                    Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
+                if(!sensorManager.registerListener(sensorListener, accelertempSensor, SensorManager.SENSOR_DELAY_FASTEST))
+                    Toast.makeText(MainActivity.this, "加速度线性传感器不可用", Toast.LENGTH_SHORT).show();
                 if(!sensorManager.registerListener(sensorListener, stepDetecterSensor, SensorManager.SENSOR_DELAY_FASTEST))
-                    Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
                 if(!sensorManager.registerListener(sensorListener, gyroscopeSensor, SensorManager.SENSOR_DELAY_FASTEST))
                     Toast.makeText(MainActivity.this, "陀螺仪不可用", Toast.LENGTH_SHORT).show();
                 if(!sensorManager.registerListener(sensorListener,gravitySensor,SensorManager.SENSOR_DELAY_FASTEST))
                     Toast.makeText(MainActivity.this, "重力传感器不可用", Toast.LENGTH_SHORT).show();
 
+                List<ScanFilter> filters = new ArrayList<>();
+                Blecount = 0;
+                reset(ble_rssi);
+                ble_clear();
+                scanner.startScan(filters, settings, scanCallback);
+
+                timer = new Timer();
+                timer.schedule(new SaveScanRes_addmag(), 500, 1000);
+                viewtimer = new Timer();
+                timer.schedule(new viewstate(),500,1000);
+
                 ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
-                SensorCollector instance = new SensorCollector(tCode,mapIndex,deviceId);//发送地磁，返回坐标
+                MagCollector instance = new MagCollector(tCode,mapIndex,deviceId);
                 LocationResult lr = new LocationResult(tCode);//赋值xy，广播更新
-                future1 = service.scheduleAtFixedRate(instance, 0, 1, TimeUnit.SECONDS);//间隔时间1s
-                future2 = service.scheduleAtFixedRate(lr, 0, 1, TimeUnit.SECONDS);//间隔时间1s
+                future1 = service.scheduleAtFixedRate(instance, 0, 1, TimeUnit.SECONDS);
+                future2 = service.scheduleAtFixedRate(lr, 0, 1, TimeUnit.SECONDS);
+//                ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
+//                SensorCollector instance = new SensorCollector(tCode,mapIndex,deviceId);//发送地磁，返回坐标
+//                LocationResult lr = new LocationResult(tCode);//赋值xy，广播更新
+//                future1 = service.scheduleAtFixedRate(instance, 0, 1, TimeUnit.SECONDS);//间隔时间1s
+//                future2 = service.scheduleAtFixedRate(lr, 0, 1, TimeUnit.SECONDS);//间隔时间1s
             }
             if (tCode == "T10201"){
-                Toast.makeText(MainActivity.this, "Begin to Fusion location", Toast.LENGTH_SHORT).show();
+//                getstate.setText("当前正在进行融合定位");
+                //Toast.makeText(MainActivity.this, "Begin to Fusion location", Toast.LENGTH_SHORT).show();
                 if(!sensorManager.registerListener(sensorListener, accelerometerSensor, SensorManager.SENSOR_DELAY_FASTEST ))
                     Toast.makeText(MainActivity.this, "加速度传感器不可用", Toast.LENGTH_SHORT).show();
                 if(!sensorManager.registerListener(sensorListener, magneticSensor, SensorManager.SENSOR_DELAY_FASTEST))
                     Toast.makeText(MainActivity.this, "磁场传感器不可用", Toast.LENGTH_SHORT).show();//监听收集地磁
                 if(!sensorManager.registerListener(sensorListener, orientationSensor, SensorManager.SENSOR_DELAY_FASTEST))
                     Toast.makeText(MainActivity.this, "方向传感器不可用", Toast.LENGTH_SHORT).show();
-                if(!sensorManager.registerListener(sensorListener, stepCounterSensor, SensorManager.SENSOR_DELAY_FASTEST))
-                    Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
+                if(!sensorManager.registerListener(sensorListener, accelertempSensor, SensorManager.SENSOR_DELAY_FASTEST))
+                    Toast.makeText(MainActivity.this, "加速度线性传感器不可用", Toast.LENGTH_SHORT).show();
                 if(!sensorManager.registerListener(sensorListener, stepDetecterSensor, SensorManager.SENSOR_DELAY_FASTEST))
-                    Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
                 if(!sensorManager.registerListener(sensorListener, gyroscopeSensor, SensorManager.SENSOR_DELAY_FASTEST))
                     Toast.makeText(MainActivity.this, "陀螺仪不可用", Toast.LENGTH_SHORT).show();
                 if(!sensorManager.registerListener(sensorListener,gravitySensor,SensorManager.SENSOR_DELAY_FASTEST))
@@ -788,7 +895,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (tCode == "T10103"){
-
+//                getstate.setText("当前正在进行蓝牙定位");
+                //Toast.makeText(MainActivity.this, "Begin to Ble location", Toast.LENGTH_SHORT).show();
                 List<ScanFilter> filters = new ArrayList<>();
 
                 Blecount = 0;
@@ -826,7 +934,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (tCode == "T10202"){
-                Toast.makeText(MainActivity.this, "Begin to Ble&Mag location", Toast.LENGTH_SHORT).show();
+//                getstate.setText("当前正在进行地磁PDR融合定位");
+                //Toast.makeText(MainActivity.this, "Begin to Pdr&Mag location", Toast.LENGTH_SHORT).show();
                 //磁强运动传感器初始化
                 if(!sensorManager.registerListener(sensorListener, accelerometerSensor, SensorManager.SENSOR_DELAY_FASTEST ))
                     Toast.makeText(MainActivity.this, "加速度传感器不可用", Toast.LENGTH_SHORT).show();
@@ -834,10 +943,10 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "磁场传感器不可用", Toast.LENGTH_SHORT).show();//监听收集地磁
                 if(!sensorManager.registerListener(sensorListener, orientationSensor, SensorManager.SENSOR_DELAY_FASTEST))
                     Toast.makeText(MainActivity.this, "方向传感器不可用", Toast.LENGTH_SHORT).show();
-                if(!sensorManager.registerListener(sensorListener, stepCounterSensor, SensorManager.SENSOR_DELAY_FASTEST))
-                    Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
+                if(!sensorManager.registerListener(sensorListener, accelertempSensor, SensorManager.SENSOR_DELAY_FASTEST))
+                    Toast.makeText(MainActivity.this, "加速度线性传感器不可用", Toast.LENGTH_SHORT).show();
                 if(!sensorManager.registerListener(sensorListener, stepDetecterSensor, SensorManager.SENSOR_DELAY_FASTEST))
-                    Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MainActivity.this, "记步传感器不可用", Toast.LENGTH_SHORT).show();
                 if(!sensorManager.registerListener(sensorListener, gyroscopeSensor, SensorManager.SENSOR_DELAY_FASTEST))
                     Toast.makeText(MainActivity.this, "陀螺仪不可用", Toast.LENGTH_SHORT).show();
                 if(!sensorManager.registerListener(sensorListener,gravitySensor,SensorManager.SENSOR_DELAY_FASTEST))
@@ -851,6 +960,8 @@ public class MainActivity extends AppCompatActivity {
 
                 timer = new Timer();
                 timer.schedule(new SaveScanRes_addmag(), 500, 1000);
+                viewtimer = new Timer();
+                timer.schedule(new viewstate(),500,1000);
 
                 ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
                 BleMagCollector instance = new BleMagCollector(tCode,mapIndex,deviceId);
@@ -872,9 +983,19 @@ public class MainActivity extends AppCompatActivity {
                 future2.cancel(true);
             }
             if (tCode == "T10102"){
+//                future1.cancel(true);
+//                future2.cancel(true);
+//                sensorManager.unregisterListener(sensorListener);
+                scanner.stopScan(scanCallback);
+//                BleManager.getInstance().cancelScan();
+//                BleManager.getInstance().disconnectAllDevice();
+//                BleManager.getInstance().destroy();
                 future1.cancel(true);
                 future2.cancel(true);
                 sensorManager.unregisterListener(sensorListener);
+                timer.cancel();
+                getstate.setText("用户停止定位");
+                getstate1.setText(" ");
             }
             if (tCode == "T10201"){
                 future1.cancel(true);
@@ -898,13 +1019,26 @@ public class MainActivity extends AppCompatActivity {
                 future2.cancel(true);
                 sensorManager.unregisterListener(sensorListener);
                 timer.cancel();
+                getstate.setText("用户停止定位");
+                getstate1.setText(" ");
             }
         }
         else
             return;
     }
 
-    public void changemap(){
+    public void changemap(String map_id){
+        if(map_id.equals("01")){
+            mapView.setText("学院2层");
+        }else if(map_id.equals("02")){
+            mapView.setText("学院3层");
+        }else if(map_id.equals("03")){
+            mapView.setText("学院4层");
+        }
+
+        getstate.setText(" ");
+        getstate1.setText(" ");
+        //constrain_flag = false;
         changeMapflag=true;
         return;
     }
@@ -953,12 +1087,17 @@ public class MainActivity extends AppCompatActivity {
             if(mapIndex == "01"){
                 imageView = (ImageView) findViewById(R.id.map1_image);
                 width = 1600;
-                height = 475;
+                //height = 475;
+                height = 600;
             }
-            else if (mapIndex == "02"){
+            else if (mapIndex == "02" || mapIndex == "03"){
                 imageView = (ImageView) findViewById(R.id.map2_image);
-                width = 1403;
-                height = 570;
+                width = 1300;
+                //height = 475;
+                height = 610;
+                // 停车场场地比例
+//                width = 1403;
+//                height = 570;
             }
 
             if(changeMapflag==true){
@@ -980,11 +1119,33 @@ public class MainActivity extends AppCompatActivity {
             double yCor = yRatio * imageView.getHeight();
             bitmap = Bitmap.createBitmap(imageView.getWidth(), imageView.getHeight(), Bitmap.Config.ARGB_8888);
             canvas = new Canvas(bitmap);
+
             paint = new Paint();
-            paint.setColor(Color.RED);
+            paint.setColor(Color.WHITE);
             paint.setStrokeWidth(20);
             // canvas.drawPoint((float) xCor, (float) yCor, paint);
-            canvas.drawCircle((float) xCor, (float) yCor, 30,paint);
+            canvas.drawCircle((float) xCor+2, (float) yCor+2, 30,paint);
+
+            Bitmap bitmap_loc;
+            state = BleMagData.getLocationstate();
+            if(state == 2){
+                bitmap_loc  = ((BitmapDrawable)getResources().getDrawable(R.drawable.icons_navigation_24_black)).getBitmap();
+            }else{
+                bitmap_loc  = ((BitmapDrawable)getResources().getDrawable(R.drawable.icons_navigation_24)).getBitmap();
+            }
+            //Bitmap bitmap_loc  = ((BitmapDrawable)getResources().getDrawable(R.drawable.icons_navigation_24)).getBitmap();
+            Matrix matrix=new Matrix();
+            matrix.postRotate(azimuth-135);
+            Bitmap dstbmp=Bitmap.createBitmap(bitmap_loc,0,0,bitmap_loc.getWidth(), bitmap_loc.getHeight(),matrix,true);
+            canvas.drawBitmap(dstbmp, (float) xCor-40, (float) yCor-40, null);
+
+//            canvas.drawBitmap(bitmap_loc, (float) xCor-30, (float) yCor-30, null);
+
+
+
+
+
+
 //
 //            //Log.d("paint", "number: "+number);
 //            if(number > 0){
@@ -1056,8 +1217,15 @@ public class MainActivity extends AppCompatActivity {
                 sendBroadcast(intent);
             }
             else if(tCode == "T10102"){
-                locationResult = SensorData.getLocationResult();
-                //Log.d("LocationResult", "run: "+locationResult[0]+" "+locationResult[1]);
+//                locationResult = SensorData.getLocationResult();
+//                azimuth = AzimuthData.getAzimuth();
+//                X = locationResult[0];
+//                Y = locationResult[1];
+////                X=1550;
+////                Y=400;
+//                sendBroadcast(intent);//发送广播
+                locationResult = BleMagData.getLocationResult();
+                azimuth = AzimuthData.getAzimuth();
                 X = locationResult[0];
                 Y = locationResult[1];
                 sendBroadcast(intent);//发送广播
@@ -1071,6 +1239,7 @@ public class MainActivity extends AppCompatActivity {
             }
             else if(tCode == "T10103"){
                 locationResult = BleData.getLocationResult();
+                azimuth = AzimuthData.getAzimuth();
                 //Log.d("LocationResult", "run: "+locationResult[0]+" "+locationResult[1]);
                 X = locationResult[0];
                 Y = locationResult[1];
@@ -1078,7 +1247,7 @@ public class MainActivity extends AppCompatActivity {
             }
             else if(tCode == "T10202"){
                 locationResult = BleMagData.getLocationResult();
-                Log.d("LocationResult", "run: "+locationResult[0]+" "+locationResult[1]);
+                azimuth = AzimuthData.getAzimuth();
                 X = locationResult[0];
                 Y = locationResult[1];
                 sendBroadcast(intent);//发送广播

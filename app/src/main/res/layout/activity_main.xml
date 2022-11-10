@@ -16,8 +16,19 @@
 
         <android.support.v7.widget.Toolbar android:id="@+id/toolbar"
             android:layout_width="match_parent" android:layout_height="?attr/actionBarSize"
-            android:background="#DD226D"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            android:background="#006938"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:text="室内定位演示系统"
+                android:textColor="#ffffff"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+        </android.support.v7.widget.Toolbar>
 
 <!--        android:background="?attr/colorPrimary"-->
     </android.support.design.widget.AppBarLayout>
@@ -26,10 +37,111 @@
 
     </LinearLayout>
 
+
+    <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+
+<!--        <ImageView-->
+<!--            android:layout_width="140dp"-->
+<!--            android:layout_height="58dp"-->
+<!--            android:layout_gravity="bottom|end"-->
+<!--            android:background="@drawable/sysu2" />-->
+<!--        />-->
+        <ImageView
+            android:layout_width="58dp"
+            android:layout_height="57dp"
+            android:layout_gravity="bottom|start"
+            android:background="@drawable/sysu3" />
+        />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout03"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+            <LinearLayout
+                android:id="@+id/viewGroup2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="60dp"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal" >
+
+
+                <TextView
+                    android:id="@+id/loc_map"
+                    android:layout_width="300dp"
+                    android:layout_height="50dp"
+                    android:textAlignment="textEnd"
+                    android:textSize="20sp"
+                    android:textColor="#3F51B5"
+                    android:textStyle="normal"/>
+
+                <TextView
+                    android:id="@+id/loc_method"
+                    android:layout_width="300dp"
+                    android:layout_height="50dp"
+                    android:textAlignment="textStart"
+                    android:textSize="20sp"
+                    android:textColor="#9C27B0"
+                    android:textStyle="normal"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/viewGroup1"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="0dp"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal" >
+
+
+                <TextView
+                    android:id="@+id/loc_state"
+                    android:layout_width="300dp"
+                    android:layout_height="50dp"
+                    android:textAlignment="textEnd"
+                    android:textSize="20sp"
+                    android:textColor="#000000"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/loc_state1"
+                    android:layout_width="300dp"
+                    android:layout_height="50dp"
+                    android:textSize="20sp"
+                    android:textColor="#006938"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+        </RelativeLayout>
+    </LinearLayout>
+
     <android.support.design.widget.FloatingActionButton android:id="@+id/fab"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:layout_gravity="bottom|end" android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/location"
         />
+
+    <Button
+        android:id="@+id/constrain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="60dp"
+        android:visibility="gone"
+        android:text="约束" />
+
 
 </android.support.design.widget.CoordinatorLayout>

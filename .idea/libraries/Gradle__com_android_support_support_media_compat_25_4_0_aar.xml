@@ -2,10 +2,15 @@
   <library name="Gradle: com.android.support:support-media-compat:25.4.0@aar">
     <ANNOTATIONS>
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/af78f77cdb3e630fd4f9009f0263ec5c/support-media-compat-25.4.0/annotations.zip!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/ac380d78429a1b48c7b798022fb145a7/support-media-compat-25.4.0/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/af78f77cdb3e630fd4f9009f0263ec5c/support-media-compat-25.4.0/jars/classes.jar!/" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/af78f77cdb3e630fd4f9009f0263ec5c/support-media-compat-25.4.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/ac380d78429a1b48c7b798022fb145a7/support-media-compat-25.4.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/ac380d78429a1b48c7b798022fb145a7/support-media-compat-25.4.0/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/ac380d78429a1b48c7b798022fb145a7/support-media-compat-25.4.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/af78f77cdb3e630fd4f9009f0263ec5c/support-media-compat-25.4.0/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

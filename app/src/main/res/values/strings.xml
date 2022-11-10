@@ -1,13 +1,14 @@
 <resources>
-    <string name="app_name">Location</string>
+    <string name="app_name">中山大学融合定位演示系统</string>
+<!--    <string name="app">中山 中山大学融合定位演示系统</string>-->
     <string name="action_wifi">Wifi</string>
-    <string name="action_magnetic">Magnetic</string>
+    <string name="action_magnetic">地磁</string>
     <string name="action_fusion">Fusion</string>
     <string name="action_bluetooth">Bluetooth</string>
-    <string name="action_blemag">BleMag</string>
-    <string name="item1">CollegeBuilding 2F</string>
-    <string name="item2">SuperComputing 5F</string>
-    <string name="item3">Item 3</string>
+    <string name="action_blemag">地磁+PDR</string>
+    <string name="item1">学院2层</string>
+    <string name="item2">学院3层</string>
+    <string name="item3">学院4层</string>
     <string name="item4">Item 4</string>
     <string name="item5">Item 5</string>
     <string name="item6">Item 6</string>

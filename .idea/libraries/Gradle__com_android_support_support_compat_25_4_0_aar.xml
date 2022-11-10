@@ -2,10 +2,15 @@
   <library name="Gradle: com.android.support:support-compat:25.4.0@aar">
     <ANNOTATIONS>
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/fe87ce3abab24158a82cf2dceaaf4cd4/support-compat-25.4.0/annotations.zip!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/3e54fce818887666e6a69a139d0ee10c/support-compat-25.4.0/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/fe87ce3abab24158a82cf2dceaaf4cd4/support-compat-25.4.0/jars/classes.jar!/" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/fe87ce3abab24158a82cf2dceaaf4cd4/support-compat-25.4.0/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/3e54fce818887666e6a69a139d0ee10c/support-compat-25.4.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/3e54fce818887666e6a69a139d0ee10c/support-compat-25.4.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/3e54fce818887666e6a69a139d0ee10c/support-compat-25.4.0/AndroidManifest.xml" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/fe87ce3abab24158a82cf2dceaaf4cd4/support-compat-25.4.0/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

@@ -3,6 +3,10 @@
     <CLASSES>
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/69b32b27b4cdb401f97a3b1246e41209/FastBleLib-2.3.4/jars/classes.jar!/" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/69b32b27b4cdb401f97a3b1246e41209/FastBleLib-2.3.4/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/f91a80d0d54464d9515a37a91269e2b5/FastBleLib-2.3.4/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/f91a80d0d54464d9515a37a91269e2b5/FastBleLib-2.3.4/AndroidManifest.xml" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/f91a80d0d54464d9515a37a91269e2b5/FastBleLib-2.3.4/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/69b32b27b4cdb401f97a3b1246e41209/FastBleLib-2.3.4/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.clj.fastble/FastBleLib/2.3.4/ce54344d6826b2e32f0d3d6c0f1a97c30ac7bd6d/FastBleLib-2.3.4-javadoc.jar!/" />

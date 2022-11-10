@@ -42,18 +42,25 @@ public class MasterFragment extends ListFragment {
             MapFragment1 mapFragment1 = new MapFragment1();
             transaction.replace(R.id.map_frame, mapFragment1, "mapFragment1");
             ((MainActivity) getActivity()).setMapIndex("01");
-
             Log.d("TAG", "onListItemClick: "+"MapFragment1");
+            ((MainActivity) getActivity()).changemap("01");
         }else if (position == MenuActionItem.ITEM2.ordinal()) {
             MapFragment2 mapFragment2 = new MapFragment2();
             transaction.replace(R.id.map_frame, mapFragment2, "mapFragment2");
             Log.d("TAG", "onListItemClick: "+"MapFragment2");
             ((MainActivity) getActivity()).setMapIndex("02");
+            ((MainActivity) getActivity()).changemap("02");
+        }else if(position == MenuActionItem.ITEM3.ordinal()) {
+            MapFragment3 mapFragment3 = new MapFragment3();
+            transaction.replace(R.id.map_frame, mapFragment3, "mapFragment3");
+            Log.d("TAG", "onListItemClick: "+"MapFragment2");
+            ((MainActivity) getActivity()).setMapIndex("03");
+            ((MainActivity) getActivity()).changemap("03");
         }
 
         String tCode = ((MainActivity) getActivity()).gettCode();
         ((MainActivity) getActivity()).stopCollector(tCode);
-        ((MainActivity) getActivity()).changemap();
+
 
         transaction.commit();
 

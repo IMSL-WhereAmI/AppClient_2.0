@@ -50,7 +50,7 @@ public class SensorCollector implements Runnable {
         if("".equals(accdata)||"".equals(orientdata)) return;
         try {
             count++;
-            String result =  HttpHelper.sendJsonPost(magdata,"",accdata,orientdata,"mag",0,count);
+            String result =  HttpHelper.sendJsonPost(magdata,"",accdata,orientdata,"","","mag",0,count,mapIndex,deviceId);
             Log.d("SensorCollector","result "+ result);
             Map maps = (Map) JSON.parse(result);
             String status = maps.get("status").toString();

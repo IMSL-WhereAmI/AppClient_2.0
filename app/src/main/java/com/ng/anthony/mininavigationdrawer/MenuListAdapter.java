@@ -52,6 +52,10 @@ public class MenuListAdapter extends ArrayAdapter<MenuActionItem> {
             holder.menuItemImageView.setImageDrawable(activity.getDrawable(R.drawable.map_1));
             holder.menuItemTextView.setText(activity.getResources().getString(R.string.item2));
         }
+        else if(position == MenuActionItem.ITEM3.ordinal()) {
+            holder.menuItemImageView.setImageDrawable(activity.getDrawable(R.drawable.map_1));
+            holder.menuItemTextView.setText(activity.getResources().getString(R.string.item3));
+        }
 //        else if(position == MenuActionItem.ITEM3.ordinal()) {
 //            holder.menuItemImageView.setImageDrawable(activity.getDrawable(R.drawable.ic_receipt_white_24dp));
 //            holder.menuItemTextView.setText(activity.getResources().getString(R.string.item3));

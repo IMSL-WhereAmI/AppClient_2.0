@@ -105,7 +105,7 @@ public class FusionCollector implements Runnable {
 
         try {
             count++;
-            String result =  HttpHelper.sendJsonPost(magdata, wifidata,"","","fusion",wdlist.size(),count);
+            String result =  HttpHelper.sendJsonPost(magdata, wifidata,"","","","","fusion",wdlist.size(),count,mapIndex,deviceId);
             Log.d("FusionCollector","count: " +  count);
             Log.d("FusionCollector","result: " +  result);
             if(result.equals("{}")) return;
